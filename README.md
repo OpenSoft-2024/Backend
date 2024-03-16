@@ -6,7 +6,7 @@ Follow these instructions to run the server:
 
 - Clone the repository using the following command:
     ```sh
-    git clone 
+    git clone https://github.com/OpenSoft-2024/Backend.git
     ```
 - Install the required packages:
     ```sh
@@ -21,12 +21,12 @@ Follow these instructions to run the server:
 
 
 ## TODO: [Immediate]
-- Authentication: 
-    - Add Oauth in authentication (Google + Facebook)
+- Authentication: : Abhishek , nishant
+    - Add Oauth in authentication (Google + Facebook) 
     - Add Role for Admin (should be secure)
     - Delete User + Profile Delete
 
-- Profile
+- Profile : Bhaskar, Akshat
     - Schema
         - UserID
         - Image URL
@@ -42,7 +42,7 @@ Follow these instructions to run the server:
         - Update - 
         - Delete - [Favorites, Watchlist, History, Subscription, Account Deletion]
 
-- Review Model
+- Review Model : Vedic,Prafull
     - Schema ==> {UserID, Ratings, CommentID, MovieID}
     - API list ==> CRUD
         - Create
@@ -50,15 +50,15 @@ Follow these instructions to run the server:
         - Update - [Ratings, Comments]
         - Delete - [DeleteByCommentID (Admin + User)]
 
-- Movie Model
+- Movie Model : Pavan ,Atul 
     - Schema ==> See sample_mflix database
     - API list ==> CRUD
         - Create
-        - Read - [/search, getByID, /languages, /genre]
+        - Read - [/search, getByID, /languages, /genre, /alltimehits, /latest]
         - Update - [Rating Changes + Any Change (Admin Only)]
         - Delete - [Delete All movie related data]
 
-- Landing Page APIs:
+- Landing Page APIs: (Under Movie Model)
     - If Login:
         - Personalised Recommendations
     - Else:
