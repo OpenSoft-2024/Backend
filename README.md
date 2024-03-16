@@ -12,12 +12,17 @@ Follow these instructions to run the server:
     ```sh
     npm install --save
     ```
+- Create a `.env` file similar to `.env.example` file and source it:
+    ```sh
+    Linux/Mac: export $(grep -v '^#' .env | xargs) 
+    Windows: Not Required to run any command
+    ```
 - Start the server with the following command:
     ```sh
     npm run server
     ```
 
-**Note**: The server runs in port 5000
+**Note**: The server runs in port 8080
 
 
 ## TODO: [Immediate]
@@ -32,10 +37,10 @@ Follow these instructions to run the server:
         - Image URL
         - History
         - Suggestions: Dynamic + Real-Time
-        - Watchlist : Array[MovieObj]
+        - Watchlist : Array[MovieObjId]
         - Favorites
         - Subscription
-        - Rentals: Array[MovieObj]
+        - Rentals: Array[MovieObjId]
     - API list ==> CRUD
         - Create - [Profile create]
         - Read - [getbyUserID]
