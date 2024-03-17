@@ -6,6 +6,7 @@ const cors = require("cors");
 
 const users = require('./routes/api/users');
 // const profile = require('./routes/api/profile');
+const sem_search= require('./routes/api/semantic');
 
 const app = express();
 
@@ -25,6 +26,8 @@ app.use(passport.initialize());
 require('./config/passport')(passport);
 
 app.use('/api/users', users);
+
+app.use('/api/semantic',sem_search);
 // app.use('/api/profile', profile);
 
 const port = process.env.PORT || 8080;
