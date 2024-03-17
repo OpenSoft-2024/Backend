@@ -4,9 +4,11 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
 const cors = require("cors");
-require('./validation/auth.js')
+require("./models/User");
+require("./models/Movie");require('./validation/auth.js')
 
 const users = require('./routes/api/users');
+const movies = require('./routes/api/movies.js');
 const reviews = require('./routes/api/review');
 // const profile = require('./routes/api/profile');
 
@@ -71,6 +73,7 @@ app.get('/auth/protected',isLoggedIn,(req,res)=>{
 
 app.use('/api/users', users);
 app.use('/api/reviews',reviews);
+app.use('/api', movies);
 // app.use('/api/profile', profile);
 
 const port = process.env.PORT || 8080;
