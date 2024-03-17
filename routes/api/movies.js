@@ -77,16 +77,19 @@ router.get('/movies/:id', (req, res) => {
         .catch(err => res.status(500).json({ error: 'Error fetching movie' }));
 });
 
-router.get('/movies/:language', (req, res) => {
-    Movie.findById(req.params.id)
-        .then(movie => {
-            if (!movie) {
-                return res.status(404).json({ error: 'Movie not found' });
-            }
-            res.json(movie);
-        })
-        .catch(err => res.status(500).json({ error: 'Error fetching movie' }));
-});
+router.get('/movies/:language',async (req, res) => {
+    const language=req.params.language
+    try{
+        const movie = await Movie.find({ languages: { $in: [language] } });
+        if (!movie) {
+            return res.status(404).json({ error: 'Movie not found' });
+        }
+        res.json(movie);
+    }
+    catch(err){
+        res.status(500).json({ error: 'Error fetching movie' })
+    }
+})
 
 // Update a movie by its ID
 router.put('/movies/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -112,11 +115,5 @@ router.delete('/movies/:id', passport.authenticate('jwt', { session: false }), (
         .catch(err => res.status(500).json({ error: 'Error deleting movie' }));
 });
 
-// Delete all movie related data
-router.delete('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
-    Movie.deleteMany({})
-        .then(() => res.json({ message: 'All movie data deleted successfully' }))
-        .catch(err => res.status(500).json({ error: 'Error deleting movie data' }));
-});
 
 module.exports = router;
