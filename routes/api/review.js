@@ -8,6 +8,7 @@ const Review = require("../../models/Review");
 
 const router=require("express").Router();
 
+
 //route to create a new Review
 router.post('/create',async (req,res)=>{
     const newReview = new Review({
@@ -76,3 +77,5 @@ router.delete(":/id",async(req,res)=>{
         res.status(500).json(err);
     }
 })
+
+module.exports = router;
