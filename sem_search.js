@@ -1,7 +1,7 @@
 const { MongoClient } = require("mongodb");
 
 // connect to your Atlas cluster
-const uri = "mongodb+srv://aks:aks@atlascluster.6h3okzb.mongodb.net/?retryWrites=true&w=majority&appName=AtlasCluster";
+const uri = "";
     
 const client = new MongoClient(uri);
 
