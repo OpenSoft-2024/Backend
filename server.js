@@ -8,6 +8,7 @@ require('./validation/auth.js')
 
 const users = require('./routes/api/users');
 const reviews = require('./routes/api/review');
+const subscription=require('./routes/api/subscription.js');
 // const profile = require('./routes/api/profile');
 
 const app = express();
@@ -71,6 +72,7 @@ app.get('/auth/protected',isLoggedIn,(req,res)=>{
 
 app.use('/api/users', users);
 app.use('/api/reviews',reviews);
+app.use('/api/subscription',subscription);
 // app.use('/api/profile', profile);
 
 const port = process.env.PORT || 8080;
