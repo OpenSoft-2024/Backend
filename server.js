@@ -12,6 +12,7 @@ const movies = require('./routes/api/movies.js');
 const reviews = require('./routes/api/review');
 const subscription=require('./routes/api/subscription.js');
 // const profile = require('./routes/api/profile');
+const profile = require('./routes/api/profile');
 
 const app = express();
 
@@ -77,6 +78,7 @@ app.use('/api/reviews',reviews);
 app.use('/api', movies);
 app.use('/api/subscription',subscription);
 // app.use('/api/profile', profile);
+app.use('/api/profile', profile);
 
 const port = process.env.PORT || 8080;
 

@@ -73,6 +73,32 @@ router.post('/login', (req, res) => {
     })
 });
 
+router.post('/delete', (req, res) => {
+    const {errors, isValid} = validateLoginInput(req.body);
+    if(!isValid) return res.status(400).json(errors);
+
+    const email = req.body.email;
+    const password = req.body.password;
+    User.findOne({email}).then(user => {
+        if (!user) {
+            errors.email = 'User not found';
+            return res.status(404).json(errors);
+        }
+        else {
+            bcrypt.compare(password, user.password).then(isMatch => {
+                if (isMatch)
+                {
+                    
+                }
+                else {
+                    errors.password = 'Password Incorrect';
+                    return res.status(400).json(errors);
+                }
+            })
+        }
+    })
+});
+
 router.get('/current', passport.authenticate('jwt', {session: false}), (req,res) => {
     res.json({
         id: req.user.id,
