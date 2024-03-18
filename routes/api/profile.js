@@ -16,12 +16,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const Profile = require("../../models/profile");
+const auth=require('../../middleware/auth')
 
 const router = require("express").Router();
 
 
 //route to create a new Profile
-router.post('/create',async (req,res)=>{
+router.post('/create',auth,async (req,res)=>{
     const newProfile = new Profile({
         userId: req.body.userId,
         imageURL: req.body.imageURL,
@@ -41,7 +42,7 @@ router.post('/create',async (req,res)=>{
 })
 
 //search by userID
-router.get('/search/:id',async (req,res)=>{
+router.get('/search/:id',auth,async (req,res)=>{
     const userId=req.params.id;
     try{
         const profile = await Profile.find({userId: userId});
@@ -53,7 +54,7 @@ router.get('/search/:id',async (req,res)=>{
 })
 
 //update profile
-router.put('/:id',async(req,res)=>{
+router.put('/:id',auth,async(req,res)=>{
     const userId=req.body.id;
     try{
         const profile = await Profile.find({userId: userId});
@@ -77,7 +78,7 @@ router.put('/:id',async(req,res)=>{
 })
 
 //delete profile
-router.delete("/:id",async(req,res)=>{
+router.delete("/:id",auth,async(req,res)=>{
     const userId=req.body.id;
     try{
         const profile = await Profile.find({userId: userId});

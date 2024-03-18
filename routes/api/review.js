@@ -7,7 +7,7 @@
 const Review = require("../../models/Review");
 const router=require("express").Router();
 const authMiddleware = require("../../middleware/auth");
-
+// const auth=require('../../middleware/auth')
 //route to create a new Review
 router.post('/create',authMiddleware,async (req,res)=>{
     const newReview = new Review({

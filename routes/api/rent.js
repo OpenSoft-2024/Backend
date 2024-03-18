@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Rent = require('../models/Rent');
-
+const auth=require('../../middleware/auth')
 // Create a rent
-router.post('/create', async (req, res) => {
+router.post('/create', auth,async (req, res) => {
     try {
         const { movieId, duration, userId } = req.body;
         const expiryDate = new Date();
@@ -24,7 +24,7 @@ router.post('/create', async (req, res) => {
 });
 
 // Read rents by userID
-router.get('/user/:userId', async (req, res) => {
+router.get('/user/:userId', auth,async (req, res) => {
     try {
         const userId = req.params.userId;
         const rents = await Rent.find({ userId });
@@ -36,7 +36,7 @@ router.get('/user/:userId', async (req, res) => {
 });
 
 // Read a single rent by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth,async (req, res) => {
     try {
         const rent = await Rent.findById(req.params.id);
         if (!rent) {
@@ -50,7 +50,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Delete expired rents
-router.delete('/user/:userId', async (req, res) => {
+router.delete('/user/:userId', auth,async (req, res) => {
     try {
         const userId = req.params.userId;
         await Rent.deleteMany({ userId });
