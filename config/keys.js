@@ -1,4 +1,8 @@
+require('dotenv').config()
+
+const { MONGO_URI, SECRET_KEY } = process.env;
+
 module.exports = {
-    mongoURI: 'mongodb+srv://user123:testdb@cluster0.yyop8h0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-    secretOrKey: 'sjgcvasdshkcdbhsbsjc'
+    mongoURI: MONGO_URI,
+    secretOrKey: SECRET_KEY,
 }

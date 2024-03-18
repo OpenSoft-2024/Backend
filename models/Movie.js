@@ -2,31 +2,34 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const MovieSchema = new Schema({
-    title: {
+    plot: {
         type: String,
         required: true
     },
-    year: {
-        type: Number,
+    genres: {
+        type: [String],
         required: true
     },
     runtime: {
         type: Number,
         required: true
     },
-    released: {
-        type: Date,
+    rated: {
+        type: String
+    },
+    cast: {
+        type: [String],
+        required: true
+    },
+    num_mflix_comments: {
+        type: Number,
         required: true
     },
     poster: {
         type: String,
         required: true
     },
-    plot: {
-        type: String,
-        required: true
-    },
-    fullplot: {
+    title: {
         type: String,
         required: true
     },
@@ -34,12 +37,33 @@ const MovieSchema = new Schema({
         type: Date,
         required: true
     },
-    type: {
-        type: String,
+    languages: {
+        type: [String]
+    },
+    released: {
+        type: Date,
         required: true
     },
     directors: {
         type: [String],
+        required: true
+    },
+    writers: {
+        type: [String]
+    },
+    awards: {
+        wins: {
+            type: Number
+        },
+        nominations: {
+            type: Number
+        },
+        text: {
+            type: String
+        }
+    },
+    year: {
+        type: Number,
         required: true
     },
     imdb: {
@@ -56,16 +80,12 @@ const MovieSchema = new Schema({
             required: true
         }
     },
-    cast: {
-        type: [String],
-        required: true
-    },
     countries: {
         type: [String],
         required: true
     },
-    genres: {
-        type: [String],
+    type: {
+        type: String,
         required: true
     },
     tomatoes: {
@@ -77,16 +97,37 @@ const MovieSchema = new Schema({
             numReviews: {
                 type: Number,
                 required: true
+            },
+            meter: {
+                type: Number
+            }
+        },
+        dvd: {
+            type: Date
+        },
+        critic: {
+            rating: {
+                type: Number
+            },
+            numReviews: {
+                type: Number
+            },
+            meter: {
+                type: Number
             }
         },
         lastUpdated: {
-            type: Date,
-            required: true
+            type: Date
+        },
+        rotten: {
+            type: Number
+        },
+        production: {
+            type: String
+        },
+        fresh: {
+            type: Number
         }
-    },
-    num_mflix_comments: {
-        type: Number,
-        required: true
     },
     plot_embedding: {
         type: [Number],
@@ -94,4 +135,4 @@ const MovieSchema = new Schema({
     }
 });
 
-module.exports = Movie = mongoose.model('movies', MovieSchema);
+module.exports = mongoose.model('Movie', MovieSchema);
