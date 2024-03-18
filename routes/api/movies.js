@@ -1,97 +1,122 @@
 const express = require('express');
 const router = express.Router();
-const Movie = require('../models/Movie');
+const passport = require('passport');
+const Movie=require('../../models/Movie');
 
-// Create a movie
-router.post('/', async (req, res) => {
+
+// POST endpoint to create a new movie
+router.post('/movies', async (req, res) => {
     try {
-        const movie = await Movie.create(req.body);
-        res.status(201).json(movie);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        const {
+            title,
+            year,
+            runtime,
+            released,
+            poster,
+            plot,
+            fullplot,
+            lastupdated,
+            type,
+            directors,
+            imdb,
+            cast,
+            countries,
+            genres,
+            tomatoes,
+            num_mflix_comments,
+            plot_embedding
+        } = req.body;
+
+        const newMovie = new Movie({
+            title,
+            year,
+            runtime,
+            released,
+            poster,
+            plot,
+            fullplot,
+            lastupdated,
+            type,
+            directors,
+            imdb,
+            cast,
+            countries,
+            genres,
+            tomatoes,
+            num_mflix_comments,
+            plot_embedding
+        });
+
+        const savedMovie = await newMovie.save();
+
+        res.status(201).json(savedMovie);
+    } catch (error) {
+        res.status(500).json({ error: 'Error creating movie', details: error.message });
     }
 });
 
-// Read - Search movies
-router.get('/search', async (req, res) => {
-    try {
-        // Implement search functionality here
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+
+
+// Search for movies
+router.get('/movies/search', (req, res) => {
+    // Mock logic: return all movies for demonstration
+    Movie.find({"title":req.body.title})
+        .then(movie => res.json(movie))
+        .catch(err => res.status(500).json({ error: 'Error fetching movies' }));
 });
 
-// Read - Get movie by ID
-router.get('/:id', async (req, res) => {
-    try {
-        const movie = await Movie.findById(req.params.id);
-        if (movie) {
+// Get a movie by its ID
+router.get('/movies/:id', (req, res) => {
+    // console.log(req.query.id)
+    Movie.findById(req.params.id)
+        .then(movie => {
+            if (!movie) {
+                return res.status(404).json({ error: 'Movie not found' });
+            }
             res.json(movie);
-        } else {
-            res.status(404).json({ message: 'Movie not found' });
+        })
+        .catch(err => res.status(500).json({ error: 'Error fetching movie' }));
+});
+
+router.post('/movies/language',async (req, res) => {
+    const language=req.body.language
+    console.log(language)
+    // to do => create language model and store movie id list in it
+    try{
+        const movie = await Movie.find({ languages: { $in: [language] } });
+        if (!movie) {
+            return res.status(404).json({ error: 'Movie not found' });
         }
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.json(movie);
     }
+    catch(err){
+        res.status(500).json({ error: 'Error fetching movie' })
+    }
+})
+
+// Update a movie by its ID
+router.put('/movies/:id', (req, res) => {
+    Movie.findByIdAndUpdate(req.params.id, req.body, { new: true })
+        .then(movie => {
+            if (!movie) {
+                return res.status(404).json({ error: 'Movie not found' });
+            }
+            res.json(movie);
+        })
+        .catch(err => res.status(500).json({ error: 'Error updating movie' }));
 });
 
-// Read - Get movies by language
-router.get('/languages/:language', async (req, res) => {
-    try {
-        // Implement functionality to get movies by language
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Read - Get movies by genre
-router.get('/genre/:genre', async (req, res) => {
-    try {
-        // Implement functionality to get movies by genre
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Read - Get all-time hits
-router.get('/alltimehits', async (req, res) => {
-    try {
-        // Implement functionality to get all-time hits
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Read - Get latest movies
-router.get('/latest', async (req, res) => {
-    try {
-        // Implement functionality to get latest movies
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Update - Rating changes (and any other changes) - Admin only
-router.put('/:id', async (req, res) => {
-    try {
-        // Implement functionality to update a movie's rating and other details
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Delete - Delete all movie related data
-router.delete('/:id', async (req, res) => {
-    try {
-        const movie = await Movie.findByIdAndDelete(req.params.id);
-        if (movie) {
+// Delete a movie by its ID
+router.delete('/movies/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
+    Movie.findByIdAndDelete(req.params.id)
+        .then(movie => {
+            if (!movie) {
+                return res.status(404).json({ error: 'Movie not found' });
+            }
             res.json({ message: 'Movie deleted successfully' });
-        } else {
-            res.status(404).json({ message: 'Movie not found' });
-        }
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+        })
+        .catch(err => res.status(500).json({ error: 'Error deleting movie' }));
 });
+
 
 module.exports = router;
