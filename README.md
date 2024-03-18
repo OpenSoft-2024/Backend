@@ -28,32 +28,7 @@ Follow these instructions to run the server:
 ## TODO: [Immediate]
 - Authentication: : Abhishek , nishant
     - Add Oauth in authentication (Google + Facebook) 
-    - Add Role for Admin (should be secure)
     - Delete User + Profile Delete
-
-- Profile : Bhaskar, Akshat
-    - Schema
-        - UserID
-        - Image URL
-        - History
-        - Suggestions: Dynamic + Real-Time
-        - Watchlist : Array[MovieObjId]
-        - Favorites
-        - Subscription
-        - Rentals: Array[MovieObjId]
-    - API list ==> CRUD
-        - Create - [Profile create]
-        - Read - [getbyUserID]
-        - Update - 
-        - Delete - [Favorites, Watchlist, History, Subscription, Account Deletion]
-
-- Review Model : Vedic,Prafull
-    - Schema ==> {UserID, Ratings, CommentID, MovieID}
-    - API list ==> CRUD
-        - Create
-        - Read - [GetByMovieID, GetByUserID]
-        - Update - [Ratings, Comments]
-        - Delete - [DeleteByCommentID (Admin + User)]
 
 - Movie Model : Pavan ,Atul 
     - Schema ==> See sample_mflix database
@@ -73,6 +48,11 @@ Follow these instructions to run the server:
             - By language (Later: By geo location)
         - All time hits 
 
+- Authenticate every API using authMiddleware and then every on authenticated request:
+  userId = req.userId 
+  isAdmin = req.isAdmin
+  Use this to authenticate if a user has permission to access this request 
+- A sample on how this can be done is shown on the Reviews API routes 
 
 
 
