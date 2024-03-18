@@ -5,14 +5,13 @@
 // Update - [Ratings, Comments]
 // Delete - [DeleteByCommentID (Admin + User)]
 const Review = require("../../models/Review");
-
 const router=require("express").Router();
-
+const authMiddleware = require("../../middleware/auth");
 
 //route to create a new Review
-router.post('/create',async (req,res)=>{
+router.post('/create',authMiddleware,async (req,res)=>{
     const newReview = new Review({
-        userId: req.body.userId,
+        userId: req.userId,
         ratings: req.body.ratings,
         comment: req.body.comment?req.body.comment:'',
         movieId: req.body.movieId,
@@ -26,7 +25,7 @@ router.post('/create',async (req,res)=>{
 })
 
 //search by movieId
-router.get('/search/movie/:id',async (req,res)=>{
+router.get('/search/movie/:id',authMiddleware,async (req,res)=>{
     const movieId=req.params.id;
     try{
         const reviews = await Review.find({movieId: movieId});
@@ -38,8 +37,9 @@ router.get('/search/movie/:id',async (req,res)=>{
 })
 
 //search by userId
-router.get('/search/user/:id',async (req,res)=>{
-    const userId = req.params.id;
+router.get('/search/user',authMiddleware,async (req,res)=>{
+    const userId = req.userId;
+
     try{
         const reviews = await Review.find({userId: userId});
         res.status(200).json(reviews);
@@ -49,13 +49,19 @@ router.get('/search/user/:id',async (req,res)=>{
 })
 
 //update review
-router.put('/:id',async(req,res)=>{
+router.put('/:id',authMiddleware,async(req,res)=>{
     const reviewId=req.body.id;
     try{
+
+        // TODO: 
+        // 1. Validate the user is the owner of the review
+        // 2. OR Validate the user is an admin 
+        // 3. If not, return 401
+        // 4. If yes, update the review
         const updatedReview = await Review.findByIdAndUpdate(reviewId,
             {
                 $set: {
-                    userId: req.body.userId,
+                    userId: req.userId,
                     ratings: req.body.ratings,
                     commentId: req.body.commentId,
                     movieId: req.body.movieId,
@@ -67,10 +73,15 @@ router.put('/:id',async(req,res)=>{
     }
 })
 
-//delete review
-router.delete(":/id",async(req,res)=>{
+//Delete review
+router.delete(":/id",authMiddleware,async(req,res)=>{
     const reviewId=req.body.id;
     try{
+        // TODO: 
+        // 1. Validate the user is the owner of the review
+        // 2. OR Validate the user is an admin 
+        // 3. If not, return 401
+        // 4. If yes, delete the review
         await Review.findByIdAndDelete(reviewId)
         res.status(200).json("Review has been deleted!");
     }catch(err){

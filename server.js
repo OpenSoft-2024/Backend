@@ -69,9 +69,6 @@ app.get('/auth/protected',isLoggedIn,(req,res)=>{
 });
 
 
-
-
-
 app.use('/api/users', users);
 app.use('/api/reviews',reviews);
 app.use('/api', movies);

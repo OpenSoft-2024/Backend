@@ -4,12 +4,10 @@ const User = require("../../models/User");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('../../config/keys');
-const passport = require('passport');
+const authMiddleWare = require('../../middleware/auth');
 
 const validateRegisterInput = require('../../validation/register');
 const validateLoginInput = require('../../validation/login');
-
-
 
 
 router.post('/register', (req, res) => {
@@ -56,11 +54,12 @@ router.post('/login', (req, res) => {
             bcrypt.compare(password, user.password).then(isMatch => {
                 if (isMatch)
                 {
-                    const payload = {id : user.id, name : user.name};
-                    jwt.sign(payload, keys.secretOrKey, {expiresIn : "6h"}, (err, token) => {
+                    const payload = {userId : user._id,isAdmin : user.isAdmin};
+                    jwt.sign(payload, keys.secretOrKey, {expiresIn : "2d"}, (err, token) => {
                         res.json({
                             success: true,
-                            token: 'Bearer ' + token
+                            token,
+
                         })
                     });
                 }
@@ -99,10 +98,10 @@ router.post('/delete', (req, res) => {
     })
 });
 
-router.get('/current', passport.authenticate('jwt', {session: false}), (req,res) => {
+router.get('/current',authMiddleWare, (req,res) => {
     res.json({
-        id: req.user.id,
-        name: req.user.name
+        userId: req.userId,
+        isAdmin: req.isAdmin
     });
 });
 
