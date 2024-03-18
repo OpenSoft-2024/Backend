@@ -71,7 +71,7 @@ app.get('/auth/protected',isLoggedIn,(req,res)=>{
 
 app.use('/api/users', users);
 app.use('/api/reviews',reviews);
-app.use('/api', movies);
+app.use('/api/movies', movies);
 app.use('/api/subscription',subscription);
 app.use('/api/profile', profile);
 
