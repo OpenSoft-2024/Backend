@@ -19,7 +19,7 @@ const ReviewSchema = new Schema({
 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Movie',
-        require: true
+        required: true
     }
 })
 

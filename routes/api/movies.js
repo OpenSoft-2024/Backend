@@ -6,7 +6,7 @@ const auth=require('../../middleware/auth')
 
 
 // POST endpoint to create a new movie
-router.post('/', async (req, res) => {
+router.post('/',auth, async (req, res) => {
     try {
         const {
             title,
@@ -66,7 +66,7 @@ router.get('/search',auth, async (req, res) => {
        if (!movie) {
         return res.status(404).json({ error: 'Movie not found' });
     }
-    res.json(movie);
+    res.status(200).json(movie);
 
     }
     catch(err)
@@ -83,7 +83,7 @@ router.get('/id/:id',auth, async (req, res) => {
         if (!movie) {
          return res.status(404).json({ error: 'Movie not found' });
      }
-     res.json(movie);
+     res.status(200).json(movie);
  
      }
      catch(err)
@@ -101,7 +101,7 @@ router.get('/language',auth,async (req, res) => {
         if (!movies) {
             return res.status(404).json({ error: 'Movie not found' });
         }
-        res.json(movies);
+        res.status(200).json(movies);
     }
     catch(err){
         res.status(500).json({ error: 'Error fetching movie' })
@@ -131,19 +131,20 @@ router.get('/gethits',auth,async(req,res)=>{
         if (!movies) {
             return res.status(404).json({ error: 'Movie not found' });
         }
-        res.json(movies);
+        res.status(200).json(movies);
     }
     catch(err){
         res.status(500).json({ error: 'Error fetching movies' })
     }
 })
+
 router.get('/latest',auth,async(req,res)=>{
     try{
         const movies=await Movie.find().sort({ released: -1 }).limit(10)
         if (!movies) {
             return res.status(404).json({ error: 'Movie not found' });
         }
-        res.json(movies);
+        res.status(200).json(movies);
     }
     catch(err){
         res.status(500).json({ error: 'Error fetching movies' })
@@ -160,7 +161,7 @@ router.put('/:id',auth,async (req, res) => {
         if (!movie) {
          return res.status(404).json({ error: 'Movie not found' });
      }
-     res.json(movie);
+     res.status(200).json(movie);
  
      }
      catch(err)
@@ -180,7 +181,7 @@ router.delete('/:id',auth, async (req, res) => {
         if (!movie) {
          return res.status(404).json({ error: 'Movie not found' });
      }
-     res.json(movie);
+     res.status(200).json(movie);
  
      }
      catch(err)

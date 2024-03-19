@@ -27,8 +27,17 @@ router.post("/register", async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(newUser.password, salt);
     newUser.password = hash;
-    const newuser = await newUser.save();
-    res.json(newuser);
+    await newUser.save();
+
+    const payload = { userId: newUser._id, isAdmin: newUser.isAdmin };
+    const token = await jwt.sign(payload, keys.secretOrKey, {
+      expiresIn: "2d",
+    });
+    res.json({
+      success: true,
+      token,
+    });
+    // res.json(newuser);
   } catch (err) {
     res.status(500).json({ error: err });
   }
@@ -78,7 +87,8 @@ router.post("/delete", authMiddleWare, async (req, res) => {
       return res.status(404).json(errors);
     }
     if (user._id != req.userId) {
-      if (!req.isAdmin) res.status(402).json("Not Allowes");
+      if (!req.isAdmin) 
+      {res.status(402).json("Not Allowed");}
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
