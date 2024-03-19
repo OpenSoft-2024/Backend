@@ -12,6 +12,7 @@ const movies = require('./routes/api/movies.js');
 const reviews = require('./routes/api/review');
 const subscription=require('./routes/api/subscription.js');
 const profile = require('./routes/api/profile');
+const googleauth = require('./routes/api/googleauth');
 
 const app = express();
 
@@ -19,10 +20,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 app.use(cors());
-
-function isLoggedIn(req,res,next){
-    req.user ? next() : res.sendStatus(401);
-}
 
 app.use(session({
     secret: 'mysecret',
@@ -44,31 +41,7 @@ app.use(passport.session());
 require('./config/passport')(passport);
 
 
-
-
-
-app.get('/auth/google',
-  passport.authenticate('google', { scope:
-      [ 'email', 'profile' ] }
-));
-
-app.get( '/auth/google/callback',
-    passport.authenticate( 'google', {
-        successRedirect: '/auth/protected',
-        failureRedirect: '/auth/google/failure'
-}));
-
-app.get('/auth/google/failure',(req,res)=>{
-    res.send("Something went wrong");
-});
-
-app.get('/auth/protected',isLoggedIn,(req,res)=>{
-    let name = req.user;
-    
-    res.send(`hello ${name.displayName}`);
-});
-
-
+app.use('/auth',googleauth);
 app.use('/api/users', users);
 app.use('/api/reviews',reviews);
 app.use('/api', movies);
