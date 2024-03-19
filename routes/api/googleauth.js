@@ -52,9 +52,9 @@ router.get('/protected', isLoggedIn, async (req, res) => {
                 password: req.user.id,
             });
 
-            const newProfile = new profile({
-                
-            })
+            // const newProfile = new profile({
+
+            // })
 
             const salt = await bcrypt.genSalt(10);
             const hash = await bcrypt.hash(newUser.password, salt);
