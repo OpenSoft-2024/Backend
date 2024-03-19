@@ -61,7 +61,7 @@ router.put('/:id',authMiddleware,async(req,res)=>{
         if (!review) {
             return res.status(404).json({ message: "Review not found" });
         }
-        if (req.userId !== review.userId && !req.isAdmin) {
+        if (req.userId !== review.userId) {
             return res.status(401).json({ message: "Unauthorized" });
         }
         const updatedReview = await Review.findByIdAndUpdate(reviewId,
