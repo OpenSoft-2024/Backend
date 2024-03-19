@@ -4,8 +4,8 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
 const cors = require("cors");
-require("./models/User");
-require("./models/Movie");require('./validation/auth.js')
+
+;require('./validation/auth.js')
 
 const users = require('./routes/api/users');
 const movies = require('./routes/api/movies.js');
