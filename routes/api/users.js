@@ -9,6 +9,11 @@ const authMiddleWare = require('../../middleware/auth');
 const validateRegisterInput = require('../../validation/register');
 const validateLoginInput = require('../../validation/login');
 
+const alphabetImages = {
+    'a': 'url_for_a.jpg',
+    'b': 'url_for_b.jpg',
+    // Add more alphabet keys and their corresponding image URLs as needed
+};
 
 router.post('/register', (req, res) => {
     const {errors, isValid} = validateRegisterInput(req.body);
@@ -20,10 +25,14 @@ router.post('/register', (req, res) => {
             return res.status(400).json(errors);
         }
         else {
+            const firstLetter = req.body.name.toLowerCase()[0];
+            const imageURL = alphabetImages[firstLetter] || 'default_url.jpg'; 
             const newUser = new User({
                 name: req.body.name,
                 email: req.body.email,
-                password: req.body.password
+                password: req.body.password,
+                imageURL: imageURL
+
             });
             bcrypt.genSalt(10, (err, salt) => {
                 bcrypt.hash(newUser.password, salt, (err, hash) => {
