@@ -2,20 +2,29 @@ const express = require('express');
 const router = express.Router();
 const Rent = require('../models/Rent');
 const auth=require('../../middleware/auth')
+const Profile=require('../../models/Profile')
 // Create a rent
 router.post('/create', auth,async (req, res) => {
     try {
-        const { movieId, duration, userId } = req.body;
+
+        const { movieId, duration} = req.body;
+        const userId=req.userId
         const expiryDate = new Date();
         expiryDate.setDate(expiryDate.getDate() + duration);
         
         const rent = new Rent({
+            duration,
             movieId,
             userId,
             expiryDate
         });
 
-        await rent.save();
+        const saved_rent=await rent.save();
+        const profile = await Profile.findOne({userId: userId});
+        profile.rentals.push(saved_rent._id)
+        await profile.save()
+
+        res.status(201).json("Rental successfull");
         res.status(201).json(rent);
     } catch (err) {
         console.error(err);
@@ -26,7 +35,7 @@ router.post('/create', auth,async (req, res) => {
 // Read rents by userID
 router.get('/user/:userId', auth,async (req, res) => {
     try {
-        const userId = req.params.userId;
+        const userId = req.userId;
         const rents = await Rent.find({ userId });
         res.json(rents);
     } catch (err) {

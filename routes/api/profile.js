@@ -15,7 +15,7 @@
 
 const express = require("express");
 const mongoose = require("mongoose");
-const Profile = require("../../models/profile");
+const Profile = require("../../models/Profile");
 const auth=require('../../middleware/auth')
 
 const router = require("express").Router();
@@ -127,6 +127,10 @@ router.put('/watchlist/:id',auth,async (req,res)=>{
 
 //delete profile
 router.delete("/:id",auth,async(req,res)=>{
+    if(!req.isAdmin)
+    {
+        res.status(404).json("Not Allowed")
+    }
     const userId=req.body.id;
     try{
         const profile = await Profile.find({userId: userId});

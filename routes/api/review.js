@@ -82,6 +82,10 @@ router.put('/:id',authMiddleware,async(req,res)=>{
 //Delete review
 router.delete(":/id",authMiddleware,async(req,res)=>{
     const reviewId=req.body.id;
+    if(!req.isAdmin)
+    {
+        res.status(404).json("Not Allowed")
+    }
     try{
         // TODO: 
         // 1. Validate the user is the owner of the review
