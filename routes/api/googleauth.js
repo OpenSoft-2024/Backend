@@ -30,8 +30,7 @@ router.get('/google/failure',(req,res)=>{
 
 router.get('/protected', isLoggedIn, async (req, res) => {
     try {
-        // let name = req.user;
-        // console.log(name);
+    
         let user = await User.findOne({ email: req.user.email });
         
         if (user) {
@@ -43,7 +42,6 @@ router.get('/protected', isLoggedIn, async (req, res) => {
                     token,
                 });
             });
-            // res.send(`just hello ${req.user.displayName}` )
         } else {
             const newUser = new User({
                 name: req.user.displayName,
@@ -78,7 +76,6 @@ router.get('/protected', isLoggedIn, async (req, res) => {
                 });
             });
 
-            console.log("updated");
             res.send(`hello ${req.user.displayName}`);
         }
     } catch (err) {
@@ -89,6 +86,3 @@ router.get('/protected', isLoggedIn, async (req, res) => {
 
 
 module.exports = router;
-
-// 100226941132329612531
-// 
