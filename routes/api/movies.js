@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const Movie=require('../../models/Movie');
-const auth=require('../../middleware/auth')
+const auth=require('../../middleware/auth');
+const Language = require('../models/Language');
+const Genre = require('../models/Genre');
 
 
 // POST endpoint to create a new movie
@@ -13,23 +15,26 @@ router.post('/create',auth, async (req, res) => {
     }
     try {
         const {
-            title,
-            year,
-            runtime,
-            released,
-            poster,
-            plot,
-            fullplot,
-            lastupdated,
-            type,
-            directors,
-            imdb,
-            cast,
-            countries,
-            genres,
-            tomatoes,
-            num_mflix_comments,
-            plot_embedding
+            title,                  // 1
+            year,                   // 2
+            runtime,                // 3
+            released,               // 4
+            poster,                 // 5
+            plot,                   // 6
+            fullplot,               // 7
+            lastupdated,            // 8
+            type,                   // 9
+            directors,              // 10
+            writers,                // 11
+            awards,                 // 12
+            imdb,                   // 13
+            cast,                   // 14
+            countries,              // 15
+            languages,              // 16
+            genres,                 // 17
+            tomatoes,               // 18
+            num_mflix_comments,     // 19
+            plot_embedding          // 20
         } = req.body;
 
         const newMovie = new Movie({
@@ -43,9 +48,12 @@ router.post('/create',auth, async (req, res) => {
             lastupdated,
             type,
             directors,
+            writers,
+            awards,
             imdb,
             cast,
             countries,
+            languages,
             genres,
             tomatoes,
             num_mflix_comments,
@@ -203,6 +211,56 @@ router.delete('/:id',auth, async (req, res) => {
      }
 });
 
+
+//scrtipt to add movie to language
+//use once only
+router.get('/update-language-and-genre-models', async (req, res) => {
+    try {
+        const movies = await Movie.find();
+
+        for (const movie of movies) {
+            const languages = movie.languages;
+            const genres = movie.genres;
+
+            // Update language model
+            for (const language of languages) {
+                let languageRecord = await Language.findOne({ language });
+
+                if (languageRecord) {
+                    languageRecord.movieIds.push(movie._id);
+                    await languageRecord.save();
+                } else {
+                    languageRecord = new Language({
+                        language,
+                        movieIds: [movie._id]
+                    });
+                    await languageRecord.save();
+                }
+            }
+
+            // Update genre model
+            for (const genre of genres) {
+                let genreRecord = await Genre.findOne({ genre });
+
+                if (genreRecord) {
+                    genreRecord.movieIds.push(movie._id);
+                    await genreRecord.save();
+                } else {
+                    genreRecord = new Genre({
+                        genre,
+                        movieIds: [movie._id]
+                    });
+                    await genreRecord.save();
+                }
+            }
+        }
+
+        res.status(200).json({ message: 'Language and genre models updated successfully.' });
+    } catch (error) {
+        console.error('Error updating language and genre models:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 
 module.exports = router;
