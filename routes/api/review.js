@@ -7,7 +7,7 @@
 const Review = require("../../models/Review");
 const router=require("express").Router();
 const authMiddleware = require("../../middleware/auth");
-
+// const auth=require('../../middleware/auth')
 //route to create a new Review
 router.post('/create',authMiddleware,async (req,res)=>{
     const newReview = new Review({
@@ -33,7 +33,6 @@ router.get('/search/movie/:id',authMiddleware,async (req,res)=>{
     }catch(err){
         res.status(500).json(err);
     }
-
 })
 
 //search by userId
@@ -58,6 +57,13 @@ router.put('/:id',authMiddleware,async(req,res)=>{
         // 2. OR Validate the user is an admin 
         // 3. If not, return 401
         // 4. If yes, update the review
+        const review = await Review.findById(reviewId);
+        if (!review) {
+            return res.status(404).json({ message: "Review not found" });
+        }
+        if (req.userId !== review.userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
         const updatedReview = await Review.findByIdAndUpdate(reviewId,
             {
                 $set: {
@@ -81,7 +87,14 @@ router.delete(":/id",authMiddleware,async(req,res)=>{
         // 1. Validate the user is the owner of the review
         // 2. OR Validate the user is an admin 
         // 3. If not, return 401
-        // 4. If yes, delete the review
+        // 4. If yes, delete the 
+        const review = await Review.findById(reviewId);
+        if (!review) {
+            return res.status(404).json({ message: "Review not found" });
+        }
+        if (req.userId !== review.userId && !req.isAdmin) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
         await Review.findByIdAndDelete(reviewId)
         res.status(200).json("Review has been deleted!");
     }catch(err){

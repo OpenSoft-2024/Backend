@@ -11,7 +11,11 @@ const profileSchema = new mongoose.Schema({
         required: true
     },
     history: {
-        type: Array,
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Movie',
+            required: true
+          }],
         required: true
     },
     suggestions: {
@@ -19,19 +23,34 @@ const profileSchema = new mongoose.Schema({
         required: true
     },
     watchlist: {
-        type: Array,
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Movie',
+            required: true
+          }],
         required: true
     },
     favorites: {
-        type: Array,
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Movie',
+            required: true
+          }],
         required: true
     },
     subscription: {
-        type: String,
-        required: true
+        
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Subscription',
+            required: true
+         
     },
     rentals: {
-        type: String,
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Movie',
+            required: true
+          }],
         required: true
     }
 });

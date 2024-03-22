@@ -1,9 +1,9 @@
 const Subscription=require("../../models/Subscription");
-
+const auth=require('../../middleware/auth')
 const router = require("express").Router();
 
 //create a new subscription
-router.post('/create',async (req, res)=>{
+router.post('/create',auth,async (req, res)=>{
     console.log('hre');
     const userId =req.body.userId
     const duration = req.body.duration
@@ -28,7 +28,7 @@ router.post('/create',async (req, res)=>{
 })
 
 //get subscription by id
-router.get('/find/:id',async (req,res)=>{
+router.get('/find/:id',auth,async (req,res)=>{
     const id=req.params.id;
     try{
         const subscription = await Subscription.findById(id);
@@ -47,7 +47,7 @@ router.get('/find/:id',async (req,res)=>{
 
 //get subscription by userId
 
-router.get('/user/:id',async (req,res)=>{
+router.get('/user/:id',auth,async (req,res)=>{
     const userId= req.params.id;
     try{
         const subscription = await Subscription.findOne({userId: userId});
@@ -60,7 +60,7 @@ router.get('/user/:id',async (req,res)=>{
 })
 
 //delete subscription by id
-router.get('/delete/:id',async(req,res)=>{
+router.get('/delete/:id',auth,async(req,res)=>{
     const subscriptionId = req.params.id;
     try{
         const deletedSubscription=await Subscription.findByIdAndDelete(subscriptionId);
@@ -76,7 +76,7 @@ router.get('/delete/:id',async(req,res)=>{
 
 //delete subscription by userID
 
-router.get('/delete/user/:id',async(req,res)=>{
+router.get('/delete/user/:id',auth,async(req,res)=>{
     const userId=req.params.id;
     try{
         const deletedSubscription=await Subscription.findOneAndDelete({userId: userId});

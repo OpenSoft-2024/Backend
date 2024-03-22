@@ -4,8 +4,8 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
 const cors = require("cors");
-require("./models/User");
-require("./models/Movie");require('./validation/auth.js')
+
+;require('./validation/auth.js')
 
 const users = require('./routes/api/users');
 const movies = require('./routes/api/movies.js');
@@ -44,7 +44,7 @@ require('./config/passport')(passport);
 app.use('/auth',googleauth);
 app.use('/api/users', users);
 app.use('/api/reviews',reviews);
-app.use('/api', movies);
+app.use('/api/movies', movies);
 app.use('/api/subscription',subscription);
 app.use('/api/profile', profile);
 
