@@ -10,6 +10,7 @@ const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 
 router.post("/register", async (req, res) => {
+  console.log("hello!",req.body);
   const { errors, isValid } = validateRegisterInput(req.body);
   if (!isValid) return res.status(400).json(errors);
   try {
@@ -44,6 +45,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
+  console.log("login called!",req.body);
   const { errors, isValid } = validateLoginInput(req.body);
   if (!isValid) return res.status(400).json(errors);
 
