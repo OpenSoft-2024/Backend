@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Rent = require('../models/Rent');
+const Rent = require('../../models/Rent');
 const auth=require('../../middleware/auth')
 const Profile=require('../../models/Profile')
 // Create a rent
@@ -25,7 +25,7 @@ router.post('/create', auth,async (req, res) => {
         await profile.save()
 
         res.status(201).json("Rental successfull");
-        res.status(201).json(rent);
+        res.status(201).json(saved_rent);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server Error' });

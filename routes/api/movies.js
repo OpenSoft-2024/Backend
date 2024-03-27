@@ -3,8 +3,8 @@ const router = express.Router();
 const passport = require('passport');
 const Movie=require('../../models/Movie');
 const auth=require('../../middleware/auth');
-const Language = require('../models/Language');
-const Genre = require('../models/Genre');
+const Language = require('../../models/Language');
+const Genre = require('../../models/Genre');
 
 
 // POST endpoint to create a new movie

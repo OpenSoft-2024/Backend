@@ -7,7 +7,10 @@ const LanguageSchema = new Schema({
         required: true
     },
     movieIds: {
-        type: [Schema.Types.ObjectId],
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Movie',
+          }],
         required: true
     }
 });
