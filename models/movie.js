@@ -132,6 +132,10 @@ const MovieSchema = new Schema({
     plot_embedding: {
         type: [Number],
         required: true
+    },
+    type:{
+        type:String,
+        default:"S",
     }
 });
 
