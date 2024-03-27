@@ -14,6 +14,8 @@ const subscription=require('./routes/api/subscription.js');
 const profile = require('./routes/api/profile');
 const googleauth = require('./routes/api/googleauth');
 
+const payment=require('./routes/api/payment');
+const rent=require('./routes/api/rent');
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: false}));
@@ -45,6 +47,8 @@ app.use('/auth',googleauth);
 app.use('/api/users', users);
 app.use('/api/reviews',reviews);
 app.use('/api/movies', movies);
+app.use('/api/payment', payment);
+app.use('/api/rent', rent);
 app.use('/api/subscription',subscription);
 app.use('/api/profile', profile);
 

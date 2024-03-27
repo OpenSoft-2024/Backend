@@ -103,7 +103,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/delete", authMiddleWare, async (req, res) => {
+router.delete("/delete", authMiddleWare, async (req, res) => {
   const { errors, isValid } = validateLoginInput(req.body);
   if (!isValid) return res.status(400).json(errors);
 

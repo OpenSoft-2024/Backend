@@ -14,7 +14,6 @@ const profileSchema = new mongoose.Schema({
         type: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Movie',
-            required: true
           }],
         required: true
     },
@@ -26,7 +25,6 @@ const profileSchema = new mongoose.Schema({
         type: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Movie',
-            required: true
           }],
         required: true
     },
@@ -34,7 +32,6 @@ const profileSchema = new mongoose.Schema({
         type: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Movie',
-            required: true
           }],
         required: true
     },
@@ -42,17 +39,16 @@ const profileSchema = new mongoose.Schema({
         
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Subscription',
-            required: true
          
     },
     rentals: {
         type: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Movie',
+            ref: 'Rent',
             required: true
           }],
         required: true
     }
 });
 
-module.exports = mongoose.model('Profile', profileSchema);
+module.exports = mongoose.model('Profile',profileSchema);
