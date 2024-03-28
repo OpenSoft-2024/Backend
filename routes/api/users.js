@@ -102,7 +102,13 @@ router.get('/profile',authMiddleWare,async (req,res)=>{
     profile.email = user.email;
     profile.name = user.name;
 
-    res.json({user: profile});
+    const userData = {
+      ...profile._doc,
+      email: user.email,
+      name: user.name
+    }
+
+    res.json({user: userData});
   }
   catch(err){
     return res.status(500).json({msg: 'Internal Server Error'});
