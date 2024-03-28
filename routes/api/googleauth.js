@@ -20,7 +20,7 @@ router.get('/google',
 
 router.get( '/google/callback',
     passport.authenticate( 'google', {
-        successRedirect: '/auth/protected',
+        successRedirect: 'http://localhost:5173/',
         failureRedirect: '/auth/google/failure'
 }));
 
@@ -28,67 +28,9 @@ router.get('/google/failure',(req,res)=>{
     res.send("Something went wrong");
 });
 
-router.get('/protected', isLoggedIn, async (req, res) => {
-    try {
-        // let name = req.user;
-        // console.log(name);
-        let user = await User.findOne({ email: req.user.email });
-        
-        if (user) {
-            const payload = { userId: user._id, isAdmin: user.isAdmin };
-            jwt.sign(payload, keys.secretOrKey, { expiresIn: "2d" }, (err, token) => {
-                if (err) throw err;
-                res.json({
-                    success: true,
-                    token,
-                });
-            });
-            // res.send(`just hello ${req.user.displayName}` )
-        } else {
-            const newUser = new User({
-                name: req.user.displayName,
-                email: req.user.email,
-                password: req.user.id,
-            });
-
-            const salt = await bcrypt.genSalt(10);
-            const hash = await bcrypt.hash(newUser.password, salt);
-            newUser.password = hash;
-            const savedUser = await newUser.save();
-
-            const newProfile = new profile({
-                userId:savedUser._id,
-                imageUrl: req.user.photos[0].value,
-                history:[],
-                suggestions:[],
-                watchlist:[],
-                favorites:[],
-                subscription:" ",
-                rentals:" ",
-            })
-
-            await newProfile.save();
-
-            const payload = { userId: savedUser._id, isAdmin: savedUser.isAdmin };
-            jwt.sign(payload, keys.secretOrKey, { expiresIn: "2d" }, (err, token) => {
-                if (err) throw err;
-                res.json({
-                    success: true,
-                    token,
-                });
-            });
-
-            console.log("updated");
-            res.send(`hello ${req.user.displayName}`);
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Internal Server Error");
-    }
-});
+// router.get('/protected', isLoggedIn, async (req, res) => {
+//     res.send("ok")
+// });
 
 
 module.exports = router;
-
-// 100226941132329612531
-// 
