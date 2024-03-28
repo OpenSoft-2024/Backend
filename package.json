@@ -10,6 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@stripe/stripe-js": "^3.0.10",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -22,6 +23,7 @@
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",
     "passport-jwt": "^4.0.1",
+    "stripe": "^14.21.0",
     "validator": "^13.11.0"
   }
 }

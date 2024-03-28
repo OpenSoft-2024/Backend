@@ -2,16 +2,19 @@ const mongoose = require('mongoose');
 
 const profileSchema = new mongoose.Schema({
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
-        unique: true
     },
     imageUrl: {
         type: String,
         required: true
     },
     history: {
-        type: Array,
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Movie',
+          }],
         required: true
     },
     suggestions: {
@@ -19,21 +22,33 @@ const profileSchema = new mongoose.Schema({
         required: true
     },
     watchlist: {
-        type: Array,
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Movie',
+          }],
         required: true
     },
     favorites: {
-        type: Array,
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Movie',
+          }],
         required: true
     },
     subscription: {
-        type: String,
-        required: true
+        
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Subscription',
+         
     },
     rentals: {
-        type: String,
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Rent',
+            required: true
+          }],
         required: true
     }
 });
 
-module.exports = mongoose.model('Profile', profileSchema);
+module.exports = mongoose.model('Profile',profileSchema);

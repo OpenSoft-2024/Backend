@@ -3,11 +3,11 @@ const Schema = mongoose.Schema;
 
 const RentSchema = new Schema({
     duration: {
-        type: String,
+        type: Number,
         required: true,
         validate: {
             validator: function(value) {
-                return ['2', '4', '7'].includes(value);
+                return [2, 4, 7].includes(value);
             },
             message: props => `${props.value} is not a valid duration. Only 2, 4, or 7 days are allowed.`
         }
@@ -28,4 +28,4 @@ const RentSchema = new Schema({
     }
 });
 RentSchema.index({ expiryDate: 1 }, { expireAfterSeconds: 0 })              // Set the expiryDate as the TTL index
-module.exports = Rent = mongoose.model('rents', RentSchema);
+module.exports = Rent = mongoose.model('Rent', RentSchema);
