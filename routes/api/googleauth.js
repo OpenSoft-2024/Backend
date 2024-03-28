@@ -5,7 +5,7 @@ const keys = require('../../config/keys');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require("../../models/User");
-const profile = require('../../models/profile.js');
+const profile = require('../../models/profile');
 
 
 function isLoggedIn(req,res,next){
@@ -61,8 +61,8 @@ router.get('/protected', isLoggedIn, async (req, res) => {
                 suggestions:[],
                 watchlist:[],
                 favorites:[],
-                subscription:" ",
-                rentals:" ",
+                subscription:null,
+                rentals:[],
             })
 
             await newProfile.save();

@@ -15,7 +15,7 @@
 
 const express = require("express");
 const mongoose = require("mongoose");
-const Profile = require("../../models/Profile");
+const Profile = require("../../models/profile");
 const auth=require('../../middleware/auth')
 
 const router = require("express").Router();

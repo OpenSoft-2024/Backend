@@ -1,7 +1,7 @@
 const Subscription=require("../../models/Subscription");
 const auth=require('../../middleware/auth')
 const router = require("express").Router();
-const Profile=require('../../models/Profile')
+const Profile=require('../../models/profile')
 //create a new subscription
 router.post('/create',auth,async (req, res)=>{
     // console.log('hre');
