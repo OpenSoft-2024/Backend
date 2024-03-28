@@ -39,7 +39,8 @@ const profileSchema = new mongoose.Schema({
         
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Subscription',
-         
+            // required: true
+
     },
     rentals: {
         type: [{
