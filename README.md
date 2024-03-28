@@ -321,3 +321,152 @@ Follow these instructions to run the server:
 {
     "Authorization": "Bearer token"
 }
+```
+---
+
+# Review API Routes
+
+## Route: POST /review
+
+**Description:** Post a review for a movie.
+
+**Headers:**
+```json
+{
+    "Authorization": "Bearer token"
+}
+```
+**Payload:**
+```json
+
+{
+"movieId": "ExampleMovieId",
+    "review": "This is an example review."
+}
+```
+## Route: DELETE /review
+
+**Description:**  Delete a review.
+
+**Headers:**
+```json
+{
+    "Authorization": "Bearer token"
+}
+```
+**Payload:**
+```json
+
+{
+    "reviewId": "ExampleReviewId"
+}
+```
+## Route: GET /review
+
+**Description:** Get the reviews for a movie.
+
+**Query Parameters:**
+```json
+{
+    "movieId": "ExampleMovieId"
+}
+```
+---
+
+# Subscription API Routes
+
+## Route: POST /subscription
+
+**Description:** Subscribe to a movie.
+
+**Headers:**
+```json
+{
+    "Authorization": "Bearer token"
+}
+```
+**Payload:**
+```json
+
+{
+    "movieId": "ExampleMovieId"
+}
+```
+
+## Route: GET /subscription
+
+**Description:** Get the subscriptions of the current user.
+
+**Headers:**
+```json
+{
+    "Authorization": "Bearer token"
+}
+```
+
+## Route:  DELETE /subscription
+
+**Description:** Unsubscribe from a movie.
+
+**Headers:**
+```json
+{
+    "Authorization": "Bearer token"
+}
+```
+**Payload:**
+```json
+
+{
+    "movieId": "ExampleMovieId"
+}
+```
+---
+# Users API Routes
+
+## Route: POST /users
+
+**Description:** Register a new user.
+
+**Payload:**
+```json
+{
+    "name": "Example Name",
+    "email": "example@example.com",
+    "password": "ExamplePassword"
+}
+```
+
+## Route: POST /users/login
+
+**Description:** Login a user.
+
+**Payload:**
+```json
+{
+    "email": "example@example.com",
+    "password": "ExamplePassword"
+}
+```
+## Route:  GET /users/me
+
+**Description:** Get the profile of the current user.
+
+**Headers:**
+```json
+{
+    "Authorization": "Bearer token"
+}
+```
+
+## Route:  POST /users/logout
+
+**Description:** Logout the current user.
+
+**Headers:**
+```json
+{
+    "Authorization": "Bearer token"
+}
+```
+---
