@@ -23,8 +23,8 @@ router.post('/create', auth,async (req, res) => {
         const profile = await Profile.findOne({userId: userId});
         profile.rentals.push(saved_rent._id)
         await profile.save()
-
-        res.status(201).json("Rental successfull");
+        console.log(profile);
+        // res.status(201).json("Rental successfull");
         res.status(201).json(saved_rent);
     } catch (err) {
         console.error(err);

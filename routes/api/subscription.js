@@ -21,15 +21,16 @@ router.post('/create',auth,async (req, res)=>{
     try{
         const savedSubscription = await newSubscription.save();
         // console.log('saved: ',savedSubscription);
-        const profile = await Profile.findOneAndUpdate(
-            { userId: userId },
-            { $set: { subscription: savedSubscription._id } },
-            { new: true }
-          );
+        const profile = await Profile.findOne({userId:userId})
+        // console.log(profile);
+        profile.subscription=savedSubscription._id
+        await profile.save()
+        //   console.log(profile);
         res.status(201).json("Subscription successfull");
-        res.status(201).json(savedSubscription);
+        // res.status(201).json(savedSubscription);
 
     }catch(err){
+        console.log(err);
         res.status(500).json(err);
     }
 
