@@ -104,30 +104,31 @@ router.get('/id/:id',auth, async (req, res) => {
 });
 
 router.get('/language',auth,async (req, res) => {
-    const language=req.query.language
+    const language=req.body.language
     // console.log(language)
     // to do => create language model and store movie id list in it
     try{
        
-        const movies = await Movie.find({ languages: { $in: [language] } });
+        const movies = await Language.findOne({ language: language });
         if (!movies) {
-            return res.status(404).json({ error: 'Movie not found' });
+            return res.status(404).json({ error: 'No movie for this language' });
         }
-        res.status(200).json(movies);
+        res.status(200).json(movies.movieIds);
     }
     catch(err){
+        console.log(err);
         res.status(500).json({ error: 'Error fetching movie' })
     }
 })
 
 router.get('/genres',auth,async(req,res)=>{
-    const genre=req.query.genre
+    const genre=req.body.genre
     try{
-        const movies = await Movie.find({ genres: { $in: [genre] } });
+        const movies = await Genre.findOne({ genre:genre});
         if (!movies) {
-            return res.status(404).json({ error: 'Movie not found' });
+            return res.status(404).json({ error: 'No movie for this genre' });
         }
-        res.json(movies);
+        res.status(200).json(movies.movieIds);
     }
     catch(err){
         res.status(500).json({ error: 'Error fetching movie' })
@@ -214,53 +215,53 @@ router.delete('/:id',auth, async (req, res) => {
 
 //scrtipt to add movie to language
 //use once only
-router.get('/update-language-and-genre-models', async (req, res) => {
-    try {
-        const movies = await Movie.find();
+// router.get('/update-language-and-genre-models', async (req, res) => {
+//     try {
+//         const movies = await Movie.find();
 
-        for (const movie of movies) {
-            const languages = movie.languages;
-            const genres = movie.genres;
+//         for (const movie of movies) {
+//             const languages = movie.languages;
+//             const genres = movie.genres;
 
-            // Update language model
-            for (const language of languages) {
-                let languageRecord = await Language.findOne({ language });
+//             // Update language model
+//             for (const language of languages) {
+//                 let languageRecord = await Language.findOne({ language });
 
-                if (languageRecord) {
-                    languageRecord.movieIds.push(movie._id);
-                    await languageRecord.save();
-                } else {
-                    languageRecord = new Language({
-                        language,
-                        movieIds: [movie._id]
-                    });
-                    await languageRecord.save();
-                }
-            }
+//                 if (languageRecord) {
+//                     languageRecord.movieIds.push(movie._id);
+//                     await languageRecord.save();
+//                 } else {
+//                     languageRecord = new Language({
+//                         language,
+//                         movieIds: [movie._id]
+//                     });
+//                     await languageRecord.save();
+//                 }
+//             }
 
-            // Update genre model
-            for (const genre of genres) {
-                let genreRecord = await Genre.findOne({ genre });
+//             // Update genre model
+//             for (const genre of genres) {
+//                 let genreRecord = await Genre.findOne({ genre });
 
-                if (genreRecord) {
-                    genreRecord.movieIds.push(movie._id);
-                    await genreRecord.save();
-                } else {
-                    genreRecord = new Genre({
-                        genre,
-                        movieIds: [movie._id]
-                    });
-                    await genreRecord.save();
-                }
-            }
-        }
+//                 if (genreRecord) {
+//                     genreRecord.movieIds.push(movie._id);
+//                     await genreRecord.save();
+//                 } else {
+//                     genreRecord = new Genre({
+//                         genre,
+//                         movieIds: [movie._id]
+//                     });
+//                     await genreRecord.save();
+//                 }
+//             }
+//         }
 
-        res.status(200).json({ message: 'Language and genre models updated successfully.' });
-    } catch (error) {
-        console.error('Error updating language and genre models:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
+//         res.status(200).json({ message: 'Language and genre models updated successfully.' });
+//     } catch (error) {
+//         console.error('Error updating language and genre models:', error);
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// });
 
 
 module.exports = router;

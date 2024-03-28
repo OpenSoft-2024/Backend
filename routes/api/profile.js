@@ -42,6 +42,16 @@ router.post('/create',auth,async (req,res)=>{
 })
 
 //search by userID
+router.get('/',auth,async (req,res)=>{
+  // const userId=req.params.id;
+  try{
+      const profile = await Profile.find({});
+      res.status(200).json(profile);
+  }catch(err){
+      res.status(500).json(err);
+  }
+
+})
 router.get('/search/:id',auth,async (req,res)=>{
     const userId=req.params.id;
     try{
