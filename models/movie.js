@@ -1,41 +1,138 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const movieSchema = new mongoose.Schema({
-    plot: String,
-    genres: [String],
-    runtime: Number,
-    cast: [String],
-    poster: String,
-    title: String,
-    fullplot: String,
-    languages: [String],
-    released: Date,
-    directors: [String],
-    rated: String,
-    awards: {
-        type: Object,
-        default: {}
+const MovieSchema = new Schema({
+    plot: {
+        type: String,
+        required: true
     },
-    lastupdated: {
-        type: Date,
-        default: Date.now
+    genres: {
+        type: [String],
+        required: true
     },
-    year: Number,
-    imdb: {
-        type: Object,
-        default: {}
+    runtime: {
+        type: Number,
+        required: true
     },
-    countries: [String],
-    tomatoes: {
-        type: Object,
-        default: {}
+    rated: {
+        type: String
+    },
+    cast: {
+        type: [String],
+        required: true
     },
     num_mflix_comments: {
         type: Number,
-        default: 0
+        required: true
+    },
+    poster: {
+        type: String,
+        required: true
+    },
+    title: {
+        type: String,
+        required: true
+    },
+    lastupdated: {
+        type: Date,
+        required: true
+    },
+    languages: {
+        type: [String]
+    },
+    released: {
+        type: Date,
+        required: true
+    },
+    directors: {
+        type: [String],
+        required: true
+    },
+    writers: {
+        type: [String]
+    },
+    awards: {
+        wins: {
+            type: Number
+        },
+        nominations: {
+            type: Number
+        },
+        text: {
+            type: String
+        }
+    },
+    year: {
+        type: Number,
+        required: true
+    },
+    imdb: {
+        rating: {
+            type: Number,
+            required: true
+        },
+        votes: {
+            type: Number,
+            required: true
+        },
+        id: {
+            type: Number,
+            required: true
+        }
+    },
+    countries: {
+        type: [String],
+        required: true
+    },
+    type: {
+        type: String,
+        required: true
+    },
+    tomatoes: {
+        viewer: {
+            rating: {
+                type: Number,
+                required: true
+            },
+            numReviews: {
+                type: Number,
+                required: true
+            },
+            meter: {
+                type: Number
+            }
+        },
+        dvd: {
+            type: Date
+        },
+        critic: {
+            rating: {
+                type: Number
+            },
+            numReviews: {
+                type: Number
+            },
+            meter: {
+                type: Number
+            }
+        },
+        lastUpdated: {
+            type: Date
+        },
+        rotten: {
+            type: Number
+        },
+        production: {
+            type: String
+        },
+        fresh: {
+            type: Number
+        }
+    },
+    plot_embedding: {
+        type: [Number],
+        required: true
     }
 });
 
-const Movie = mongoose.model('Movie', movieSchema);
-
-module.exports = Movie;
+module.exports = mongoose.model('Movie', MovieSchema);
