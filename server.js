@@ -14,6 +14,8 @@ const subscription=require('./routes/api/subscription.js');
 const profile = require('./routes/api/profile');
 const payment=require('./routes/api/payment');
 const rent=require('./routes/api/rent');
+const sem_search=require('./routes/api/sem_search.js');
+const fuzzySearch=require('./routes/api/fuzzySearch.js');
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: false}));
@@ -77,6 +79,8 @@ app.use('/api/payment', payment);
 app.use('/api/rent', rent);
 app.use('/api/subscription',subscription);
 app.use('/api/profile', profile);
+app.use('/api/sem_search',sem_search);
+app.use('/api/fuzzySearch',fuzzySearch);
 
 const port = process.env.PORT || 8080;
 

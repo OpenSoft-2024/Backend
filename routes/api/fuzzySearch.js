@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const movies = require("../../models/Movies");
+const movies = require("../../models/Movie");
 
 // Define a route handler for GET requests to /api/search
 router.get('/', async (req, res) => {
