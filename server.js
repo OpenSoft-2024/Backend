@@ -22,7 +22,7 @@ const fuzzySearch=require('./routes/api/fuzzySearch.js');
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+
 
 app.use(cors());
 
@@ -49,32 +49,16 @@ app.use(passport.initialize());
 app.use(passport.session());
 require('./config/passport')(passport);
 
+app.use(
+  bodyParser.json({
+      verify: function(req, res, buf) {
+          req.rawBody = buf;
+      }
+  })
+);
 
-
-
-
-app.get('/auth/google',
-  passport.authenticate('google', { scope:
-      [ 'email', 'profile' ] }
-));
-
-app.get( '/auth/google/callback',
-    passport.authenticate( 'google', {
-        successRedirect: '/auth/protected',
-        failureRedirect: '/auth/google/failure'
-}));
-
-app.get('/auth/google/failure',(req,res)=>{
-    res.send("Something went wrong");
-});
-
-app.get('/auth/protected',isLoggedIn,(req,res)=>{
-    let name = req.user;
-    
-    res.send(`hello ${name.displayName}`);
-});
-
-
+app.use(bodyParser.json());
+app.use('/auth',googleauth);
 app.use('/api/users', users);
 app.use('/api/reviews',reviews);
 app.use('/api/movies', movies);
@@ -83,7 +67,9 @@ app.use('/api/rent', rent);
 app.use('/api/subscription',subscription);
 app.use('/api/profile', profile);
 app.use('/api/sem_search',sem_search);
-app.use('/api/fuzzySearch',fuzzySearch);app.use('/api/search', search);
+app.use('/api/fuzzySearch',fuzzySearch);
+app.use('/api/search', search);
+
 
 
 const port = process.env.PORT || 8080;

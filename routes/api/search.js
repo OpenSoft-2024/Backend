@@ -2,10 +2,15 @@ const router=require("express").Router();
 const Movie = require("../../models/Movie");
 
 //normal search
-// autocomplete 
-// fuzzy search 
+// autocomplete            -- DONE
+// fuzzy search            -- DONE
 // semantic by langchain 
-// partial match 
+// partial match          
+// hybrid search 
+
+// suggestions 
+// geospatial
+// multilingual
 
 
 //plot search
@@ -13,6 +18,8 @@ const Movie = require("../../models/Movie");
 // fuzzy search
 // score
 // semantic by langchain
+// partial match 
+// hybrid search 
 
 const searchResultsByTitle = async (query) => {
 
