@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
         const pipeline = [
             {
                 '$search': {
-                    'index': 'custom1',
+                    'index': 'title',
                     'text': {
                         'path': 'title',
                         'query': q,
