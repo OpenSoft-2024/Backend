@@ -5,8 +5,8 @@ const auth = require("../../middleware/auth");
 const Subscription = require("../../models/Subscription");
 
 router.post("/checkout",auth, async (req, res) => {
-  const {amt,name } = req.body;
-  console.log(amt,name);
+  const {amt,name,tier } = req.body;
+  // console.log(req);
   try {
     const session = await stripe.checkout.sessions.create({
         line_items: [
@@ -23,6 +23,7 @@ router.post("/checkout",auth, async (req, res) => {
         ],
         mode: 'payment',
         payment_method_types:["card"],
+        metadata:{id:req.userId,tier:tier},
         success_url: 'http://localhost:5173',
         cancel_url: 'http://localhost:5173',
       });
@@ -36,29 +37,47 @@ router.post("/checkout",auth, async (req, res) => {
 
 router.post('/webhook', async (req, res) => {
   const sig = req.headers['stripe-signature'];
+  
   let event;
 
   try {
-    event = await stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = await stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     console.error(err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   // Handle the event
-  if (event.type === 'checkout.session.completed') {
+  if (event.type == 'checkout.session.completed') {
     const session = event.data.object;
+    // console.log(session);
     
-    const userId = session.metadata.userId; 
+    const userId = session.metadata.id; 
+    const tier=session.metadata.tier
+    console.log({"id":userId});
 
+    const currentDate = new Date();
+    const expiryDate = new Date(currentDate.setMonth(currentDate.getMonth()+1));
+    // console.log("expiry: ",expiryDate);
     const subscription = new Subscription({
-      userId,
-      tier: 1,
-      duration:1,
+        duration: 1,
+        userId: userId,
+        expiryDate: expiryDate,
+        tier:tier
     });
-
-    await subscription.save();
+    try{
+      await subscription.save();
+      console.log("Subscription successfull");
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
+    
+    
   }
+  else  console.log(`Unhandled event type ${event.type}`);
+
 
   res.json({ received: true });
 });

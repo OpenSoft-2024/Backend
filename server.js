@@ -19,7 +19,7 @@ const rent=require('./routes/api/rent');
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+
 
 app.use(cors());
 
@@ -42,7 +42,15 @@ app.use(passport.initialize());
 app.use(passport.session());
 require('./config/passport')(passport);
 
+app.use(
+  bodyParser.json({
+      verify: function(req, res, buf) {
+          req.rawBody = buf;
+      }
+  })
+);
 
+app.use(bodyParser.json());
 app.use('/auth',googleauth);
 app.use('/api/users', users);
 app.use('/api/reviews',reviews);
@@ -51,6 +59,7 @@ app.use('/api/payment', payment);
 app.use('/api/rent', rent);
 app.use('/api/subscription',subscription);
 app.use('/api/profile', profile);
+
 
 
 const port = process.env.PORT || 8080;
