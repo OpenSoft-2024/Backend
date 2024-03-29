@@ -13,6 +13,7 @@ const reviews = require('./routes/api/review');
 const subscription=require('./routes/api/subscription.js');
 const profile = require('./routes/api/profile');
 const googleauth = require('./routes/api/googleauth');
+const search = require('./routes/api/search');
 
 const payment=require('./routes/api/payment');
 const rent=require('./routes/api/rent');
@@ -28,7 +29,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: {secure:false}
-  }));
+}));
 
 const db = require('./config/keys').mongoURI;
 
@@ -51,6 +52,7 @@ app.use('/api/payment', payment);
 app.use('/api/rent', rent);
 app.use('/api/subscription',subscription);
 app.use('/api/profile', profile);
+app.use('/api/search', search);
 
 
 const port = process.env.PORT || 8080;

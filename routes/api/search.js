@@ -6,4 +6,8 @@ router.get('/',async (req,res)=>{
     
     const {query} = req.query;
     
+
+
 })
+
+module.exports = router;

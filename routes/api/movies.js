@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
 const Movie=require('../../models/Movie');
 const auth=require('../../middleware/auth');
 const Language = require('../../models/Language');
@@ -181,31 +180,32 @@ router.put('/:id',auth,async (req, res) => {
         res.status(404).json("Not Allowed")
     }
     try{
-        const movie= await  Movie.findByIdAndUpdate(req.params.id, req.body, { new: true })
+
+        const movie = await Movie.findByIdAndUpdate(req.params.id, req.body, { new: true })
         if (!movie) {
          return res.status(404).json({ error: 'Movie not found' });
-     }
-     res.status(200).json(movie);
+        }
+        res.status(200).json(movie);
  
-     }
-     catch(err)
-     {
+    }
+    catch(err){
         res.status(500).json({ message: 'Error updating movies',error:err })
-     }
+    }
 });
 
 // Delete a movie by its ID
 router.delete('/:id',auth, async (req, res) => {
     try{
-        if(!req.isAdmin)
-        {
+        if(!req.isAdmin){
             res.status(403).json({"error":"Not Allowed"})
         }
+
         const movie= await Movie.findByIdAndDelete(req.params.id)
         if (!movie) {
-         return res.status(404).json({ error: 'Movie not found' });
-     }
-     res.status(200).json(movie);
+         return res.status(404).json({ error: 'Movie not found' })
+        }
+
+        res.status(200).json(movie);
  
      }
      catch(err)
