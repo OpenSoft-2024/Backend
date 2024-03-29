@@ -19,6 +19,8 @@ const payment=require('./routes/api/payment');
 const rent=require('./routes/api/rent');
 const sem_search=require('./routes/api/sem_search.js');
 const fuzzySearch=require('./routes/api/fuzzySearch.js');
+const autocomplete=require('./routes/api/autocomplete.js');
+const partialMatch=require('./routes/api/partialMatch.js');
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: false}));
@@ -71,6 +73,8 @@ app.use('/api/fuzzySearch',fuzzySearch);
 app.use('/api/search', search);
 
 
+app.use('/api/autocomplete',autocomplete);
+app.use('/api/partialmatch',partialMatch);
 
 const port = process.env.PORT || 8080;
 
