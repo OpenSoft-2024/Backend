@@ -5,7 +5,7 @@ const Movie = require('../../models/Movie');
 router.get('/', async (req, res) => {
     const { q } = req.query;
 
-    if (!q || q.trim().length s=== 0) {
+    if (!q || q.trim().length === 0) {
         return res.status(400).json({ message: 'Please provide a search query.' });
     }
 
