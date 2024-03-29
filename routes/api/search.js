@@ -1,10 +1,9 @@
 const router=require("express").Router();
 const Movie = require("../../models/Movie");
 
-//title search
+//normal search
 // autocomplete 
-// fuzzy search
-// score 
+// fuzzy search 
 // semantic by langchain 
 // partial match 
 
@@ -24,6 +23,12 @@ const searchResultsByTitle = async (query) => {
 router.get('/',async (req,res)=>{
     
     const {query} = req.query
+
+    if (!q || q.trim().length === 0) {
+        return res.status(400).json({ msg: 'Please provide a search query.' });
+    }
+
+    
     
 })
 
