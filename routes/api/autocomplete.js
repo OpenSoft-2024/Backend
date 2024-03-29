@@ -17,19 +17,19 @@ router.get('/', async (req, res) => {
         // Define the aggregation pipeline for text search
         const pipeline = [
             {
-                '$search': {
-                    'index': 'title',
-                    'text': {
-                        'path': 'title',
+                $search: {
+                  "index": "title", // optional, defaults to "default"
+                  "autocomplete": {
+                    'path': 'title',
                         'query': q,
                         'fuzzy': {
                             maxEdits: 2,
                             prefixLength: 0,
                             maxExpansions: 10
                         }
-                    }
+                  }
                 }
-            },
+            }, // Added comma here
             {
                 $limit: 10
             },

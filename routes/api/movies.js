@@ -87,7 +87,7 @@ router.get('/search', async (req, res) => {
 });
 
 // Get a movie by its ID
-router.get('/id/:id',auth, async (req, res) => {
+router.get('/id/:id', async (req, res) => {
     // console.log(req.query.id)
     try{
         const movie= await Movie.findById(req.params.id)
@@ -97,8 +97,7 @@ router.get('/id/:id',auth, async (req, res) => {
      res.status(200).json(movie);
  
      }
-     catch(err)
-     {
+     catch(err){
         res.status(500).json({ message: 'Error fetching movies',error:err })
      }
 });
