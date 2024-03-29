@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
 const Movie=require('../../models/Movie');
 const auth=require('../../middleware/auth');
 const Language = require('../../models/Language');
 const Genre = require('../../models/Genre');
+const Profile = require('../../models/profile');
 
 
 // POST endpoint to create a new movie
@@ -181,31 +181,49 @@ router.put('/:id',auth,async (req, res) => {
         res.status(404).json("Not Allowed")
     }
     try{
-        const movie= await  Movie.findByIdAndUpdate(req.params.id, req.body, { new: true })
+
+        const movie = await Movie.findByIdAndUpdate(req.params.id, req.body, { new: true })
         if (!movie) {
          return res.status(404).json({ error: 'Movie not found' });
-     }
-     res.status(200).json(movie);
+        }
+        res.status(200).json(movie);
  
-     }
-     catch(err)
-     {
+    }
+    catch(err){
         res.status(500).json({ message: 'Error updating movies',error:err })
-     }
+    }
 });
+
+router.get('/getProfileDetails',auth,async(req,res)=>{
+
+    const userId = req.userId;
+
+    try{
+        const profile = await Profile.findOne({userId:userId}).populate('history').populate('watchlist').populate('favorites');
+        if (!profile) {
+          return res.status(404).json({ error: 'Profile not found' });
+        }  
+
+        res.status(200).json(profile);
+    }
+    catch(err){
+        res.status(500).json({ msg: 'Error fetching profile',error:err })
+    }
+})
 
 // Delete a movie by its ID
 router.delete('/:id',auth, async (req, res) => {
     try{
-        if(!req.isAdmin)
-        {
+        if(!req.isAdmin){
             res.status(403).json({"error":"Not Allowed"})
         }
+
         const movie= await Movie.findByIdAndDelete(req.params.id)
         if (!movie) {
-         return res.status(404).json({ error: 'Movie not found' });
-     }
-     res.status(200).json(movie);
+         return res.status(404).json({ error: 'Movie not found' })
+        }
+
+        res.status(200).json(movie);
  
      }
      catch(err)
