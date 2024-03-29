@@ -103,7 +103,7 @@ router.get('/id/:id',auth, async (req, res) => {
      }
 });
 
-router.get('/language',auth,async (req, res) => {
+router.get('/language',async (req, res) => {
     const language=req.body.language
     // console.log(language)
     // to do => create language model and store movie id list in it
@@ -121,7 +121,7 @@ router.get('/language',auth,async (req, res) => {
     }
 })
 
-router.get('/genres',auth,async(req,res)=>{
+router.get('/genres',async(req,res)=>{
     const genre=req.body.genre
     try{
         const movies = await Genre.findOne({ genre:genre});
@@ -156,7 +156,7 @@ router.get('/gethits',async(req,res)=>{
     }
 })
 
-router.get('/latest',auth,async(req,res)=>{
+router.get('/latest',async(req,res)=>{
     try{
         const movies=await Movie.find().sort({ released: -1 }).limit(10)
         if (!movies) {

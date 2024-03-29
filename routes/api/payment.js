@@ -27,7 +27,7 @@ router.post("/checkout",auth, async (req, res) => {
         cancel_url: 'http://localhost:5173',
       });
 
-    res.status(200).json({id:session.id});
+    res.status(200).json({session:session});
   } catch (err) {
     res.status(500).json(err);
   }
@@ -39,7 +39,7 @@ router.post('/webhook', async (req, res) => {
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = await stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     console.error(err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -49,9 +49,15 @@ router.post('/webhook', async (req, res) => {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     
-    console.log('Payment completed:', session);
-    
+    const userId = session.metadata.userId; 
 
+    const subscription = new Subscription({
+      userId,
+      tier: 1,
+      duration:1,
+    });
+
+    await subscription.save();
   }
 
   res.json({ received: true });
