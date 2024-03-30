@@ -80,8 +80,8 @@ router.get('/searchMovies', async (req, res) => {
                 $vectorSearch: {
                     queryVector: queryEmbedding,
                     path: "plot_embedding",
-                    numCandidates: 1,
-                    limit: 1,
+                    numCandidates: 100,
+                    limit: 4,
                     index: "plot_embedding",
                 }
             },
@@ -89,7 +89,7 @@ router.get('/searchMovies', async (req, res) => {
                 $project: {
                     _id: 1,
                     title: 1,
-                    plot: 1
+                    //plot: 1
                 }
             }
         ]);
