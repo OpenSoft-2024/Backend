@@ -19,7 +19,33 @@ const Movie = require("../../models/Movie");
 // autocomplete             --DONE
 // fuzzy search             --DONE  
 // partial match            --DONE 
-// hybrid search OR langchain integration              
+// hybrid search OR langchain integration 
+const axios = require('axios');
+
+const hf_token = "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";
+const embedding_url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2";
+
+// Function to generate embedding
+async function generate_embedding(text) {
+    try {
+        const response = await axios.post(embedding_url, {
+            inputs: text
+        }, {
+            headers: {
+                Authorization: `Bearer ${hf_token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.status !== 200) {
+            throw new Error(`Request failed with status code ${response.status}: ${response.data}`);
+        }
+
+        return response.data;
+    } catch (error) {
+        throw new Error(`Error: ${error.message}`);
+    }
+}             
 
 const autoAndFuzzySearch = async (query,index,field) => {
 
@@ -144,6 +170,115 @@ router.get('/plot',async (req,res)=>{
         return res.status(500).json({ msg: 'Internal Server Error' });
     }
 });
+
+router.get('/plot', async (req, res) => {
+    try {
+        const query = req.query.q; // Change 'query' to 'q'
+        if (!query) {
+            return res.status(400).json({ error: "Query parameter is missing" });
+        }
+
+        const queryEmbedding = await generate_embedding(query);
+
+        const results = await Movie.aggregate([
+            {
+                $vectorSearch: {
+                    queryVector: queryEmbedding,
+                    path: "plot_embedding",
+                    numCandidates: 100,
+                    limit: 4,
+                    index: "plot_embedding",
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                    //plot: 1
+                }
+            }
+        ]);
+
+        res.json(results);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.get('/title', async (req, res) => {
+    try {
+        const query = req.query.q; // Change 'query' to 'q'
+        if (!query) {
+            return res.status(400).json({ error: "Query parameter is missing" });
+        }
+
+        const queryEmbedding = await generate_embedding(query);
+
+        const results = await Movie.aggregate([
+            {
+                $vectorSearch: {
+                    queryVector: queryEmbedding,
+                    path: "title_embedding", // Change path to title_embedding
+                    numCandidates: 100,
+                    limit: 4,
+                    index: "vector_index", // Change index name to vector_index
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                    // plot: 1
+                }
+            }
+        ]);
+
+        res.json(results);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+router.get('/poster', async (req, res) => {
+    try {
+        const query = req.query.q; // Change 'query' to 'q'
+        if (!query) {
+            return res.status(400).json({ error: "Query parameter is missing" });
+        }
+
+        const queryEmbedding = await generate_embedding(query);
+
+        const results = await Movie.aggregate([
+            {
+                $vectorSearch: {
+                    queryVector: queryEmbedding,
+                    path: "poster_details_embedding", // Change path to poster_details_embedding
+                    numCandidates: 100,
+                    limit: 4,
+                    index: "poster_details_embedding", // Assuming the name of the index is "vector_index"
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                }
+            }
+        ]);
+
+        res.json(results);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+
+module.exports = router;
 
 
 
