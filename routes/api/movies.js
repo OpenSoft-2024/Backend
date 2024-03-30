@@ -235,6 +235,8 @@ router.delete('/:id',auth, async (req, res) => {
 router.post('/history',auth,async(req,res)=>{
     const userId = req.userId;
     const movieId = req.body.movieId;
+    console.log(req.body);
+    
     try{
         const profile = await Profile.findOne({userId:userId});
         if(!profile) return res.status(404).json({msg: 'Profile not found'});
@@ -255,14 +257,19 @@ router.post('/history',auth,async(req,res)=>{
 router.post('/watchlist',auth,async(req,res)=>{
     const userId = req.userId;
     const movieId = req.body.movieId;
+    console.log(req.body);
+   
     try{
         const profile = await Profile.findOne({userId:userId});
         if(!profile) return res.status(404).json({msg: 'Profile not found'});
         
         if(!profile.watchlist.includes(movieId)){
             profile.watchlist.push(movieId);
-            await profile.save();
         }
+        else{
+            profile.watchlist=profile.watchlist.filter(id=>id!=movieId);
+        }
+        await profile.save();
         res.status(200).json({msg: 'Movie added to watchlist'});
     }
     catch(err){
@@ -281,8 +288,12 @@ router.post('/favorites',auth,async(req,res)=>{
         
         if(!profile.favorites.includes(movieId)){   
             profile.favorites.push(movieId);
-            await profile.save();
         }
+        else{
+            profile.favorites=profile.favorites.filter(id=> id!=movieId);
+        }
+        await profile.save();
+        console.log('movie added succefully')
         res.status(200).json({msg: 'Movie added to favorites'});
     }
     catch(err){
