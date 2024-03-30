@@ -1,43 +1,103 @@
 const express = require('express');
 const router = express.Router();
 const Movie = require('../../models/Movie');
+const axios = require('axios');
 
-router.get('/', async (req, res) => {
-    const { q } = req.query;
+const hf_token = "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";
+const embedding_url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2";
 
-    if (!q || q.trim().length === 0) {
-        return res.status(400).json({ message: 'Please provide a search query.' });
+// Function to generate embedding
+async function generate_embedding(text) {
+    try {
+        const response = await axios.post(embedding_url, {
+            inputs: text
+        }, {
+            headers: {
+                Authorization: `Bearer ${hf_token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.status !== 200) {
+            throw new Error(`Request failed with status code ${response.status}: ${response.data}`);
+        }
+
+        return response.data;
+    } catch (error) {
+        throw new Error(`Error: ${error.message}`);
+    }
+}
+
+// Route to handle embedding generation for a single movie
+router.get('/generate-embedding', async (req, res) => {
+    const queryString = req.query.queryString;
+    if (!queryString) {
+        return res.status(400).json({ error: "Query string parameter is missing" });
     }
 
     try {
-        // Define the aggregation pipeline
-        const agg = [
+        const embedding = await generate_embedding(queryString);
+        res.json({ embedding });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Route to update plot embeddings for all movies
+router.get('/update-plot-embeddings', async (req, res) => {
+    try {
+        const movies = await Movie.find();
+
+        for (const movie of movies) {
+            if (movie.plot) {
+                const embedding = await generate_embedding(movie.plot);
+                movie.plot_embedding = embedding;
+                await movie.save();
+            }
+        }
+        
+        console.log("Plot embeddings updated for all movies");
+        res.status(200).json({ message: "Plot embeddings updated for all movies" });
+    } catch (error) {
+        console.error("Error updating plot embeddings:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Route to search for movies based on embeddings
+// Route to search for movies based on embeddings
+router.get('/searchMovies', async (req, res) => {
+    try {
+        const query = req.query.q; // Change 'query' to 'q'
+        if (!query) {
+            return res.status(400).json({ error: "Query parameter is missing" });
+        }
+
+        const queryEmbedding = await generate_embedding(query);
+
+        const results = await Movie.aggregate([
             {
-                $match: { $text: { $search: q } }
+                $vectorSearch: {
+                    queryVector: queryEmbedding,
+                    path: "plot_embedding",
+                    numCandidates: 1,
+                    limit: 1,
+                    index: "plot_embedding",
+                }
             },
             {
                 $project: {
                     _id: 1,
                     title: 1,
-                    score: { $meta: 'textScore' }
+                    plot: 1
                 }
-            },
-            {
-                $sort: { score: { $meta: 'textScore' } }
-            },
-            {
-                $limit: 10
             }
-        ];
+        ]);
 
-        // Execute the aggregation pipeline
-        const results = await Movie.aggregate(agg);
-
-        res.status(200).json({ message: 'Search results', results });
+        res.json(results);
     } catch (error) {
-        // Handle errors
-        console.error(error);
-        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
