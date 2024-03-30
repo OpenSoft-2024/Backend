@@ -137,4 +137,40 @@ router.get('/title', async (req, res) => {
 });
 
 
+router.get('/poster', async (req, res) => {
+    try {
+        const query = req.query.q; // Change 'query' to 'q'
+        if (!query) {
+            return res.status(400).json({ error: "Query parameter is missing" });
+        }
+
+        const queryEmbedding = await generate_embedding(query);
+
+        const results = await Movie.aggregate([
+            {
+                $vectorSearch: {
+                    queryVector: queryEmbedding,
+                    path: "poster_details_embedding", // Change path to poster_details_embedding
+                    numCandidates: 100,
+                    limit: 4,
+                    index: "poster_details_embedding", // Assuming the name of the index is "vector_index"
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                }
+            }
+        ]);
+
+        res.json(results);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+
 module.exports = router;
