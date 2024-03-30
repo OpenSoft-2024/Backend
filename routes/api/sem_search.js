@@ -3,7 +3,7 @@ const router = express.Router();
 const Movie = require('../../models/Movie');
 const axios = require('axios');
 
-const hf_token = "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";
+const hf_token = process.env.HF_TOKEN;
 const embedding_url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2";
 
 // Function to generate embedding
@@ -80,7 +80,7 @@ router.get('/plot', async (req, res) => {
                     queryVector: queryEmbedding,
                     path: "plot_embedding",
                     numCandidates: 100,
-                    limit: 4,
+                    limit: 12,
                     index: "plot_embedding",
                 }
             },
@@ -102,7 +102,7 @@ router.get('/plot', async (req, res) => {
                     queryVector: queryEmbedding,
                     path: "poster_details_embedding", // Change path to poster_details_embedding
                     numCandidates: 100,
-                    limit: 4,
+                    limit: 12,
                     index: "poster_details_embedding", // Assuming the name of the index is "vector_index"
                 }
             },
@@ -115,16 +115,10 @@ router.get('/plot', async (req, res) => {
                 }
             }
         ]);
-
-        let result2 = new Set();
-        for(const el in results)
-        result2.add(el)
-
-        for(const el in results1)
-        result2.add(el)
+        const results2 = [...results,...results1];
         // result2=[...results,...results1]
 
-        res.json(result2);
+        res.json(results2);
     } catch (error) {
         console.error('Error:', error);
         res.status(500).send('Internal Server Error');
@@ -146,7 +140,7 @@ router.get('/', async (req, res) => {
                     queryVector: queryEmbedding,
                     path: "title_embedding", // Change path to title_embedding
                     numCandidates: 100,
-                    limit: 4,
+                    limit: 12,
                     index: "vector_index", // Change index name to vector_index
                 }
             },
@@ -190,7 +184,7 @@ router.get('/poster', async (req, res) => {
                     queryVector: queryEmbedding1,
                     path: "poster_details_embedding", // Change path to poster_details_embedding
                     numCandidates: 100,
-                    limit: 4,
+                    limit: 12,
                     index: "poster_details_embedding", // Assuming the name of the index is "vector_index"
                 }
             },
