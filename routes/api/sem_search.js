@@ -89,7 +89,8 @@ router.get('/plot', async (req, res) => {
                     '_id': 1,
                     'title': 1,
                     'poster':1,
-                    'released':1
+                    'released':1,
+                    "plot":1
                 }
             }
         ]);
@@ -111,7 +112,8 @@ router.get('/plot', async (req, res) => {
                     '_id': 1,
                 'title': 1,
                 'poster':1,
-                'released':1
+                'released':1,
+                "plot":1
                 }
             }
         ]);
@@ -149,7 +151,8 @@ router.get('/', async (req, res) => {
                     '_id': 1,
                 'title': 1,
                 'poster':1,
-                'released':1
+                'released':1,
+                "plot":1
                 }
             }
         ]);

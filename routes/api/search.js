@@ -127,7 +127,8 @@ const autoAndFuzzySearch = async (query,index,field) => {
                 '_id': 1,
                 'title': 1,
                 'poster':1,
-                'released':1
+                'released':1,
+                "plot":1
                 }
             }
         ];
@@ -165,7 +166,8 @@ const partialMatch = async (query,index,field) => {
                 '_id': 1,
                 'title': 1,
                 'poster':1,
-                'released':1
+                'released':1,
+                "plot":1
                 }
             }
         ];
@@ -278,7 +280,8 @@ router.post('/image-search', upload.single('image'), async (req, res) => {
                     _id: 1,
                     title: 1,
                     released: 1,
-                    poster: 1
+                    poster: 1,
+                    "plot":1
                 }
             }
         ]);
