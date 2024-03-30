@@ -4,7 +4,7 @@ const Movie=require('../../models/Movie');
 const auth=require('../../middleware/auth');
 const Language = require('../../models/Language');
 const Genre = require('../../models/Genre');
-const Profile = require('../../models/profile');
+const Profile = require('../../models/Profile');
 
 
 // POST endpoint to create a new movie

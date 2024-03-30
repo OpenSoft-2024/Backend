@@ -83,6 +83,8 @@ const partialMatch = async (query,index,field) => {
                 '$project': {
                 '_id': 1,
                 'title': 1,
+                'poster':1,
+                'released':1
                 }
             }
         ];

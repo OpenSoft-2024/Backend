@@ -5,7 +5,7 @@ const keys = require('../../config/keys');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require("../../models/User");
-const profile = require('../../models/profile');
+const profile = require('../../models/Profile');
 
 
 function isLoggedIn(req,res,next){

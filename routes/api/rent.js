@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Rent = require('../../models/Rent');
 const auth=require('../../middleware/auth')
-const Profile=require('../../models/profile')
+const Profile=require('../../models/Profile')
 // Create a rent
 router.post('/create', auth,async (req, res) => {
     try {

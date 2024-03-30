@@ -14,6 +14,7 @@ const subscription=require('./routes/api/subscription.js');
 const profile = require('./routes/api/profile');
 const googleauth = require('./routes/api/googleauth');
 const search = require('./routes/api/search');
+const Search_hist=require('./routes/api/search_hist')
 
 const payment=require('./routes/api/payment');
 const rent=require('./routes/api/rent');
@@ -66,7 +67,7 @@ app.use('/api/rent', rent);
 app.use('/api/subscription',subscription);
 app.use('/api/profile', profile);
 app.use('/api/search', search);
-
+app.use('/api/search_hist',Search_hist)
 
 const port = process.env.PORT || 8080;
 
