@@ -146,7 +146,7 @@ router.get('/gethits',async(req,res)=>{
     //     await Movie.updateMany({ _id: { $gt: twentiethMovie._id, $lt:fourtithMovie._id } }, { $set: { type: 'R' } });
         // const movies=await Movie.countDocuments({type:'S'})
         
-        const movies=await Movie.find().sort({ "tomatoes.viewer.rating": -1 }).limit(20)
+        const movies=await Movie.find().sort({ "imdb.rating": -1 }).limit(20)
         if (!movies) {
             return res.status(404).json({ error: 'Movie not found' });
         }
@@ -231,6 +231,65 @@ router.delete('/:id',auth, async (req, res) => {
      }
 });
 
+// add a movie to history
+router.post('/history',auth,async(req,res)=>{
+    const userId = req.userId;
+    const movieId = req.body.movieId;
+    try{
+        const profile = await Profile.findOne({userId:userId});
+        if(!profile) return res.status(404).json({msg: 'Profile not found'});
+        
+        if(!profile.history.includes(movieId)){
+            profile.history.push(movieId);
+            await profile.save();
+        }
+        res.status(200).json({msg: 'Movie added to history'});
+    }
+    catch(err){
+        res.status(500).json({msg: 'Internal Server Error'});
+        console.log(err);
+    }
+})
+
+// add a movie to watchlist
+router.post('/watchlist',auth,async(req,res)=>{
+    const userId = req.userId;
+    const movieId = req.body.movieId;
+    try{
+        const profile = await Profile.findOne({userId:userId});
+        if(!profile) return res.status(404).json({msg: 'Profile not found'});
+        
+        if(!profile.watchlist.includes(movieId)){
+            profile.watchlist.push(movieId);
+            await profile.save();
+        }
+        res.status(200).json({msg: 'Movie added to watchlist'});
+    }
+    catch(err){
+        res.status(500).json({msg: 'Internal Server Error'});
+        console.log(err);
+    }
+})
+
+// add a movie to favorites
+router.post('/favorites',auth,async(req,res)=>{
+    const userId = req.userId;
+    const movieId = req.body.movieId;
+    try{
+        const profile = await Profile.findOne({userId:userId});
+        if(!profile) return res.status(404).json({msg: 'Profile not found'});
+        
+        if(!profile.favorites.includes(movieId)){   
+            profile.favorites.push(movieId);
+            await profile.save();
+        }
+        res.status(200).json({msg: 'Movie added to favorites'});
+    }
+    catch(err){
+        res.status(500).json({msg: 'Internal Server Error'});
+        console.log(err);
+    }
+})
 
 //scrtipt to add movie to language
 //use once only

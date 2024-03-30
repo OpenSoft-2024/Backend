@@ -4,49 +4,39 @@ const Schema = mongoose.Schema;
 const MovieSchema = new Schema({
     plot: {
         type: String,
-        required: true
     },
     genres: {
         type: [String],
-        required: true
     },
     runtime: {
         type: Number,
-        required: true
     },
     rated: {
         type: String
     },
     cast: {
         type: [String],
-        required: true
     },
     num_mflix_comments: {
         type: Number,
-        required: true
     },
     poster: {
         type: String,
-        required: true
     },
     title: {
         type: String,
-        required: true
     },
     lastupdated: {
         type: Date,
-        required: true
     },
     languages: {
         type: [String]
     },
     released: {
         type: Date,
-        required: true
     },
     directors: {
         type: [String],
-        required: true
     },
     writers: {
         type: [String]
@@ -64,39 +54,32 @@ const MovieSchema = new Schema({
     },
     year: {
         type: Number,
-        required: true
     },
     imdb: {
         rating: {
             type: Number,
-            required: true
         },
         votes: {
             type: Number,
-            required: true
+            
         },
         id: {
             type: Number,
-            required: true
         }
     },
     countries: {
         type: [String],
-        required: true
     },
     type: {
         type: String,
-        required: true
     },
     tomatoes: {
         viewer: {
             rating: {
                 type: Number,
-                required: true
             },
             numReviews: {
                 type: Number,
-                required: true
             },
             meter: {
                 type: Number
@@ -131,11 +114,17 @@ const MovieSchema = new Schema({
     },
     plot_embedding: {
         type: [Number],
-        required: true
     },
     type:{
         type:String,
         default:"S",
+    },
+    premium:{
+        type:Boolean,
+        default:false
+    },
+    poster_details:{
+        type:String
     }
 });
 
