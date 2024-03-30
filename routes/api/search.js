@@ -39,8 +39,30 @@ function encodeImage(imageBuffer) {
     return Buffer.from(imageBuffer).toString('base64');
 }
 
+async function generate_embedding(text) {
+    try {
+        const response = await axios.post(embedding_url, {
+            inputs: text
+        }, {
+            headers: {
+                Authorization: `Bearer ${hf_token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.status !== 200) {
+            throw new Error(`Request failed with status code ${response.status}: ${response.data}`);
+        }
+
+        return response.data;
+    } catch (error) {
+        throw new Error(`Error: ${error.message}`);
+    }
+}
+
+
 async function getCaption(base64Image, apiKey, tok, prefix) {
-    const customPrompt = "Directly describe with brevity and as brief as possible the scene or characters without any introductory phrase like 'This image shows', 'In the scene', 'This image depicts' or similar phrases. Just start describing the scene please. Do not end the caption with a '.'. Some characters may be animated, refer to them as regular humans and not animated humans. Please make no reference to any particular style or characters from any TV show or Movie. Good examples: a cat on a windowsill, a photo of smiling cactus in an office, a man and baby sitting by a window, a photo of wheel on a car,";
+    const customPrompt = "This is a movie poster give me a description of the poster and the plot of the movie in 50 words";
     
     const headers = {
         'Content-Type': 'application/json',
@@ -105,7 +127,8 @@ const autoAndFuzzySearch = async (query,index,field) => {
                 '_id': 1,
                 'title': 1,
                 'poster':1,
-                'released':1
+                'released':1,
+                "plot":1
                 }
             }
         ];
@@ -143,7 +166,8 @@ const partialMatch = async (query,index,field) => {
                 '_id': 1,
                 'title': 1,
                 'poster':1,
-                'released':1
+                'released':1,
+                "plot":1
                 }
             }
         ];
@@ -169,15 +193,18 @@ router.get('/',async (req,res)=>{
     try{
         const autoAndFuzzySearchResults = await autoAndFuzzySearch(query,"title","title");
         const partialMatchResults = await partialMatch(query,"partialmatch","title");
+        const results = [...autoAndFuzzySearchResults,...partialMatchResults];
         // let results = new Set();
-        let result2 = new Set();
-        for(const el in autoAndFuzzySearchResults)
-        result2.add(el)
+        // let result2 = new Set();
+        // for(const el of autoAndFuzzySearchResults)
+        // result2.add(el)
 
-        for(const el in partialMatchResults)
-        result2.add(el)
+        // for(const el of partialMatchResults)
+        // result2.add(el)
+        // // result2=[]
+        // console.log(result2);
 
-        res.status(200).json(result2);
+        res.status(200).json(results);
 
     }
     catch(err){
@@ -198,15 +225,15 @@ router.get('/plot',async (req,res)=>{
     try{
         const autoAndFuzzySearchResults = await autoAndFuzzySearch(query,"plot","plot");
         const partialMatchResults = await partialMatch(query,"partialmatch_plot","plot");
+        const results = [...autoAndFuzzySearchResults,...partialMatchResults];
+        // let result2 = new Set();
+        // for(const el of autoAndFuzzySearchResults)
+        // result2.add(el)
 
-        let result2 = new Set();
-        for(const el in autoAndFuzzySearchResults)
-        result2.add(el)
+        // for(const el of partialMatchResults)
+        // result2.add(el)
 
-        for(const el in partialMatchResults)
-        result2.add(el)
-
-        res.status(200).json(result2);
+        res.status(200).json(results);
 
     }
     catch(err){
@@ -231,16 +258,18 @@ router.post('/image-search', upload.single('image'), async (req, res) => {
     
 
         const caption = await getCaption(base64Image, apiKey, tok, prefix);
+        // console.log(caption);
         const caption_embeddings = await generate_embedding(caption);
+        // console.log(caption_embeddings);
 
         const results = await Movie.aggregate([
             {
                 $vectorSearch: {
                     queryVector: caption_embeddings,
-                    path: "poster_details_embedding", 
+                    path: "plot_embedding", 
                     numCandidates: 100,
-                    limit: 4,
-                    index: "poster_details_embedding", 
+                    limit: 12,
+                    index: "plot_embedding", 
                 }
             },
             {
@@ -248,7 +277,8 @@ router.post('/image-search', upload.single('image'), async (req, res) => {
                     _id: 1,
                     title: 1,
                     released: 1,
-                    poster: 1
+                    poster: 1,
+                    "plot":1
                 }
             }
         ]);
