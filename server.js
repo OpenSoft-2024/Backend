@@ -17,7 +17,6 @@ const rent=require('./routes/api/rent');
 const fuzzySearch=require('./routes/api/fuzzySearch.js');
 const autocomplete=require('./routes/api/autocomplete.js');
 const partialMatch=require('./routes/api/partialMatch.js');
-const append=require('./routes/api/append-premium.js');
 const sem_search=require('./routes/api/sem_search.js');
 const app = express();
 
@@ -85,7 +84,6 @@ app.use('/api/profile', profile);
 app.use('/api/fuzzySearch',fuzzySearch);
 app.use('/api/autocomplete',autocomplete);
 app.use('/api/partialmatch',partialMatch);
-app.use('/api/append',append);
 app.use('/api/sem_search',sem_search);
 
 const port = process.env.PORT || 8080;
