@@ -344,6 +344,15 @@ router.get('/update-language-and-genre-models', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
+router.get('/rent_1', async (req, res) => {
+    try {
+        const rentedMovies = await Movie.find({ rent: true });
+        const rentedMovieIds = rentedMovies.map(movie => movie._id);
+        res.status(200).json({ rentedMovies: rentedMovieIds });
+    } catch (error) {
+        console.error('Error retrieving rented movies:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 module.exports = router;
