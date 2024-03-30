@@ -8,6 +8,11 @@ router.post('/', auth,async (req, res) => {
   try {
     const userId=req.userId
     const {query } = req.body;
+    if (!query || query.trim().length === 0) {
+        return res.status(400).json({ msg: 'Please provide a search query.' });
+    }
+
+
     const user=await SearchHistory.findOne({userId:userId})
     if(user)
     {

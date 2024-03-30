@@ -77,27 +77,7 @@ async function getCaption(base64Image, apiKey, tok, prefix) {
     }
 }
 
-// Function to generate embedding
-async function generate_embedding(text) {
-    try {
-        const response = await axios.post(embedding_url, {
-            inputs: text
-        }, {
-            headers: {
-                Authorization: `Bearer ${hf_token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.status !== 200) {
-            throw new Error(`Request failed with status code ${response.status}: ${response.data}`);
-        }
-
-        return response.data;
-    } catch (error) {
-        console.error('Error:', error.message);
-    }
-}             
+// Function to generate embedding      
 
 const autoAndFuzzySearch = async (query,index,field) => {
 
@@ -122,8 +102,10 @@ const autoAndFuzzySearch = async (query,index,field) => {
             { $limit: 10 },
             {
                 $project: {
-                    _id: 1,
-                    title: 1
+                '_id': 1,
+                'title': 1,
+                'poster':1,
+                'released':1
                 }
             }
         ];
@@ -187,10 +169,15 @@ router.get('/',async (req,res)=>{
     try{
         const autoAndFuzzySearchResults = await autoAndFuzzySearch(query,"title","title");
         const partialMatchResults = await partialMatch(query,"partialmatch","title");
+        // let results = new Set();
+        let result2 = new Set();
+        for(const el in autoAndFuzzySearchResults)
+        result2.add(el)
 
-        const results = [...autoAndFuzzySearchResults, ...partialMatchResults];
+        for(const el in partialMatchResults)
+        result2.add(el)
 
-        res.status(200).json(results);
+        res.status(200).json(result2);
 
     }
     catch(err){
@@ -212,9 +199,14 @@ router.get('/plot',async (req,res)=>{
         const autoAndFuzzySearchResults = await autoAndFuzzySearch(query,"plot","plot");
         const partialMatchResults = await partialMatch(query,"partialmatch_plot","plot");
 
-        const results = [...autoAndFuzzySearchResults, ...partialMatchResults];
+        let result2 = new Set();
+        for(const el in autoAndFuzzySearchResults)
+        result2.add(el)
 
-        res.status(200).json(results);
+        for(const el in partialMatchResults)
+        result2.add(el)
+
+        res.status(200).json(result2);
 
     }
     catch(err){
@@ -223,112 +215,7 @@ router.get('/plot',async (req,res)=>{
     }
 });
 
-// Plot semantic search
-router.get('/plot', async (req, res) => {
-    try {
-        const query = req.query.q; // Change 'query' to 'q'
-        if (!query) {
-            return res.status(400).json({ error: "Query parameter is missing" });
-        }
 
-        const queryEmbedding = await generate_embedding(query);
-
-        const results = await Movie.aggregate([
-            {
-                $vectorSearch: {
-                    queryVector: queryEmbedding,
-                    path: "plot_embedding",
-                    numCandidates: 100,
-                    limit: 4,
-                    index: "plot_embedding",
-                }
-            },
-            {
-                $project: {
-                    _id: 1,
-                    title: 1,
-                    //plot: 1
-                }
-            }
-        ]);
-
-        res.json(results);
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-// title semantic search
-router.get('/title', async (req, res) => {
-    try {
-        const query = req.query.q; // Change 'query' to 'q'
-        if (!query) {
-            return res.status(400).json({ error: "Query parameter is missing" });
-        }
-
-        const queryEmbedding = await generate_embedding(query);
-
-        const results = await Movie.aggregate([
-            {
-                $vectorSearch: {
-                    queryVector: queryEmbedding,
-                    path: "title_embedding", // Change path to title_embedding
-                    numCandidates: 100,
-                    limit: 4,
-                    index: "vector_index", // Change index name to vector_index
-                }
-            },
-            {
-                $project: {
-                    _id: 1,
-                    title: 1,
-                    // plot: 1
-                }
-            }
-        ]);
-
-        res.json(results);
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-// Poster semantic search
-router.get('/poster', async (req, res) => {
-    try {
-        const query = req.query.q; // Change 'query' to 'q'
-        if (!query) {
-            return res.status(400).json({ error: "Query parameter is missing" });
-        }
-
-        const queryEmbedding = await generate_embedding(query);
-
-        const results = await Movie.aggregate([
-            {
-                $vectorSearch: {
-                    queryVector: queryEmbedding,
-                    path: "poster_details_embedding", // Change path to poster_details_embedding
-                    numCandidates: 100,
-                    limit: 4,
-                    index: "poster_details_embedding", // Assuming the name of the index is "vector_index"
-                }
-            },
-            {
-                $project: {
-                    _id: 1,
-                    title: 1,
-                }
-            }
-        ]);
-
-        res.json(results);
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
 
 // Image search -- TO BE TESTED
 router.post('/image-search', upload.single('image'), async (req, res) => {

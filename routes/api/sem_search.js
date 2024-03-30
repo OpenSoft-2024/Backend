@@ -68,11 +68,10 @@ router.get('/update-plot-embeddings', async (req, res) => {
 // Route to search for movies based on embeddings
 router.get('/plot', async (req, res) => {
     try {
-        const query = req.query.q; // Change 'query' to 'q'
-        if (!query) {
-            return res.status(400).json({ error: "Query parameter is missing" });
+          const {query} = req.query // Change 'query' to 'q'
+          if (!query || query.trim().length === 0) {
+            return res.status(400).json({ msg: 'Please provide a search query.' });
         }
-
         const queryEmbedding = await generate_embedding(query);
 
         const results = await Movie.aggregate([
@@ -87,25 +86,56 @@ router.get('/plot', async (req, res) => {
             },
             {
                 $project: {
-                    _id: 1,
-                    title: 1,
-                    //plot: 1
+                    '_id': 1,
+                    'title': 1,
+                    'poster':1,
+                    'released':1
                 }
             }
         ]);
 
-        res.json(results);
+        // const queryEmbedding1 = await generate_embedding(query);
+
+        const results1 = await Movie.aggregate([
+            {
+                $vectorSearch: {
+                    queryVector: queryEmbedding,
+                    path: "poster_details_embedding", // Change path to poster_details_embedding
+                    numCandidates: 100,
+                    limit: 4,
+                    index: "poster_details_embedding", // Assuming the name of the index is "vector_index"
+                }
+            },
+            {
+                $project: {
+                    '_id': 1,
+                'title': 1,
+                'poster':1,
+                'released':1
+                }
+            }
+        ]);
+
+        let result2 = new Set();
+        for(const el in results)
+        result2.add(el)
+
+        for(const el in results1)
+        result2.add(el)
+        // result2=[...results,...results1]
+
+        res.json(result2);
     } catch (error) {
         console.error('Error:', error);
         res.status(500).send('Internal Server Error');
     }
 });
 
-router.get('/title', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
-        const query = req.query.q; // Change 'query' to 'q'
-        if (!query) {
-            return res.status(400).json({ error: "Query parameter is missing" });
+        const {query} = req.query // Change 'query' to 'q'
+        if (!query || query.trim().length === 0) {
+            return res.status(400).json({ msg: 'Please provide a search query.' });
         }
 
         const queryEmbedding = await generate_embedding(query);
@@ -122,12 +152,18 @@ router.get('/title', async (req, res) => {
             },
             {
                 $project: {
-                    _id: 1,
-                    title: 1,
-                    // plot: 1
+                    '_id': 1,
+                'title': 1,
+                'poster':1,
+                'released':1
                 }
             }
         ]);
+
+       
+
+        
+
 
         res.json(results);
     } catch (error) {
@@ -139,17 +175,19 @@ router.get('/title', async (req, res) => {
 
 router.get('/poster', async (req, res) => {
     try {
-        const query = req.query.q; // Change 'query' to 'q'
-        if (!query) {
-            return res.status(400).json({ error: "Query parameter is missing" });
+        const {query} = req.query // Change 'query' to 'q'
+        if (!query || query.trim().length === 0) {
+            return res.status(400).json({ msg: 'Please provide a search query.' });
         }
 
-        const queryEmbedding = await generate_embedding(query);
+       
 
-        const results = await Movie.aggregate([
+        const queryEmbedding1 = await generate_embedding(query);
+
+        const results1 = await Movie.aggregate([
             {
                 $vectorSearch: {
-                    queryVector: queryEmbedding,
+                    queryVector: queryEmbedding1,
                     path: "poster_details_embedding", // Change path to poster_details_embedding
                     numCandidates: 100,
                     limit: 4,
@@ -158,13 +196,18 @@ router.get('/poster', async (req, res) => {
             },
             {
                 $project: {
-                    _id: 1,
-                    title: 1,
+                    '_id': 1,
+                'title': 1,
+                'poster':1,
+                'released':1
                 }
             }
         ]);
 
-        res.json(results);
+       
+
+        res.json(results1);
+
     } catch (error) {
         console.error('Error:', error);
         res.status(500).send('Internal Server Error');
