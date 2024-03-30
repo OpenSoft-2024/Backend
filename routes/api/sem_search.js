@@ -66,7 +66,7 @@ router.get('/update-plot-embeddings', async (req, res) => {
 
 // Route to search for movies based on embeddings
 // Route to search for movies based on embeddings
-router.get('/searchMovies', async (req, res) => {
+router.get('/plot', async (req, res) => {
     try {
         const query = req.query.q; // Change 'query' to 'q'
         if (!query) {
@@ -100,5 +100,41 @@ router.get('/searchMovies', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
+router.get('/title', async (req, res) => {
+    try {
+        const query = req.query.q; // Change 'query' to 'q'
+        if (!query) {
+            return res.status(400).json({ error: "Query parameter is missing" });
+        }
+
+        const queryEmbedding = await generate_embedding(query);
+
+        const results = await Movie.aggregate([
+            {
+                $vectorSearch: {
+                    queryVector: queryEmbedding,
+                    path: "title_embedding", // Change path to title_embedding
+                    numCandidates: 100,
+                    limit: 4,
+                    index: "vector_index", // Change index name to vector_index
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                    // plot: 1
+                }
+            }
+        ]);
+
+        res.json(results);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 
 module.exports = router;
