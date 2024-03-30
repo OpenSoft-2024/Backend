@@ -25,7 +25,7 @@ const axios = require('axios');
 const multer = require('multer');
 
 // Hugging Face API
-const hf_token = "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";
+const hf_token = process.env.HF_TOKEN;
 const embedding_url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2";
 
 
@@ -228,10 +228,7 @@ router.post('/image-search', upload.single('image'), async (req, res) => {
         const apiKey = process.env.OPENAI_API_KEY; 
         const tok = req.body.tok; 
         const prefix = req.body.prefix === 'y' ? 'in the style of' : req.body.prefix; 
-        
-        if (!apiKey){
-            return res.status(500).json({ message: 'OpenAI API key not found' });
-        }
+    
 
         const caption = await getCaption(base64Image, apiKey, tok, prefix);
         const caption_embeddings = await generate_embedding(caption);
@@ -263,9 +260,10 @@ router.post('/image-search', upload.single('image'), async (req, res) => {
     }
 });
 
-// Recommendations based on watch history
-router.get('/getWatchHistoryRecommendations', async (req, res) => {
-});
 
 
 module.exports = router;
+
+
+
+

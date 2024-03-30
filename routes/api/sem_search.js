@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Movie = require('../../models/Movie');
 const axios = require('axios');
+const SearchHistory = require('../../models/Search_Hist');
 
 const hf_token = "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";
 const embedding_url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2";
@@ -28,41 +29,88 @@ async function generate_embedding(text) {
     }
 }
 
-// Route to handle embedding generation for a single movie
-router.get('/generate-embedding', async (req, res) => {
-    const queryString = req.query.queryString;
-    if (!queryString) {
-        return res.status(400).json({ error: "Query string parameter is missing" });
-    }
 
+
+async function getTitle(text) {
     try {
-        const embedding = await generate_embedding(queryString);
-        res.json({ embedding });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Route to update plot embeddings for all movies
-router.get('/update-plot-embeddings', async (req, res) => {
-    try {
-        const movies = await Movie.find();
-
-        for (const movie of movies) {
-            if (movie.plot) {
-                const embedding = await generate_embedding(movie.plot);
-                movie.plot_embedding = embedding;
-                await movie.save();
-            }
+        if (!text || typeof text !== 'string') {
+            throw new Error("Text parameter is missing or not a string");
         }
-        
-        console.log("Plot embeddings updated for all movies");
-        res.status(200).json({ message: "Plot embeddings updated for all movies" });
+
+        const queryEmbedding = await generate_embedding(text);
+
+        const results = await Movie.aggregate([
+            {
+                $vectorSearch: {
+                    queryVector: queryEmbedding,
+                    path: "title_embedding", // Change path to title_embedding
+                    numCandidates: 100,
+                    limit: 4,
+                    index: "vector_index", // Change index name to vector_index
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                    // plot: 1
+                }
+            }
+        ]);
+
+        return results; // Return results instead of sending response
     } catch (error) {
-        console.error("Error updating plot embeddings:", error);
-        res.status(500).json({ error: error.message });
+        console.error('Error:', error.message); // Log the error message
+        throw error; // Propagate the error to the calling function
     }
-});
+}
+
+
+
+
+//recommend_movies function
+async function recommendMovies(searchHistory) {
+    const frequencyMap = new Map();
+
+    // Update frequency map with search results
+    for (const searchText of searchHistory) {
+        const movieIds = await getTitle(searchText);
+        for (const id of movieIds) {
+            frequencyMap.set(id, (frequencyMap.get(id) || 0) + 1);
+        }
+    }
+    // console.log(frequencyMap);
+
+    // Sort movies by frequency
+    const sortedMovies = Array.from(frequencyMap.entries())
+                                .sort((a, b) => b[1] - a[1])
+                                .map(([id, _]) => id);
+
+    // Get top 10 movies
+    let topMovies = sortedMovies.slice(0, 10);
+
+    // If less than 10 unique movies, fill the rest with random movies from the database
+    if (topMovies.length < 10) {
+        const remaining = 10 - topMovies.length;
+        const allMoviesCursor = Movie.find({}, { '_id': 1 });
+        let allMovieIds = [];
+        for await (const movie of allMoviesCursor) {
+            allMovieIds.push(movie._id);
+        }
+        const shuffledIds = allMovieIds.sort(() => Math.random() - 0.5);
+        for (const id of shuffledIds) {
+            if (!topMovies.includes(id)) {
+                topMovies.push(id);
+            }
+            if (topMovies.length >= 10) break;
+        }
+    }
+
+    return topMovies;
+}
+
+
+
 
 // Route to search for movies based on embeddings
 // Route to search for movies based on embeddings
@@ -131,6 +179,8 @@ router.get('/plot', async (req, res) => {
     }
 });
 
+
+//semantics title search
 router.get('/', async (req, res) => {
     try {
         const {query} = req.query // Change 'query' to 'q'
@@ -152,7 +202,7 @@ router.get('/', async (req, res) => {
             },
             {
                 $project: {
-                    '_id': 1,
+                '_id': 1,
                 'title': 1,
                 'poster':1,
                 'released':1
@@ -161,10 +211,6 @@ router.get('/', async (req, res) => {
         ]);
 
        
-
-        
-
-
         res.json(results);
     } catch (error) {
         console.error('Error:', error);
@@ -172,48 +218,27 @@ router.get('/', async (req, res) => {
     }
 });
 
-
-router.get('/poster', async (req, res) => {
+router.get('/historyRecommendations',auth, async (req, res) => {
     try {
-        const {query} = req.query // Change 'query' to 'q'
-        if (!query || query.trim().length === 0) {
-            return res.status(400).json({ msg: 'Please provide a search query.' });
+        const userId = req.userId;
+
+        // Retrieve search history for the specified user ID from the database
+        const searchHistory = await SearchHistory.findOne({ userId });
+        
+        if (!searchHistory) {
+            return res.status(404).json([]);// send random movies if no search history
         }
 
-       
+        // Call the recommendMovies function with the search history
+        const recommendations = await recommendMovies(searchHistory.history);
 
-        const queryEmbedding1 = await generate_embedding(query);
-
-        const results1 = await Movie.aggregate([
-            {
-                $vectorSearch: {
-                    queryVector: queryEmbedding1,
-                    path: "poster_details_embedding", // Change path to poster_details_embedding
-                    numCandidates: 100,
-                    limit: 4,
-                    index: "poster_details_embedding", // Assuming the name of the index is "vector_index"
-                }
-            },
-            {
-                $project: {
-                    '_id': 1,
-                'title': 1,
-                'poster':1,
-                'released':1
-                }
-            }
-        ]);
-
-       
-
-        res.json(results1);
-
+        // Return the recommendations as JSON
+        res.json(recommendations);
     } catch (error) {
         console.error('Error:', error);
         res.status(500).send('Internal Server Error');
     }
 });
-
 
 
 module.exports = router;
