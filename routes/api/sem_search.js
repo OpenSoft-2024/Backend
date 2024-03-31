@@ -92,7 +92,7 @@ async function recommendMovies(searchHistory) {
     // If less than 10 unique movies, fill the rest with random movies from the database
     if (topMovies.length < 10) {
         const remaining = 10 - topMovies.length;
-        const allMoviesCursor = Movie.find({}, { '_id': 1 });
+        const allMoviesCursor = Movie.find({}, { '_id': 1 , 'title':1,'released':1,'poster':1,'plot':1});
         let allMovieIds = [];
         for await (const movie of allMoviesCursor) {
             allMovieIds.push(movie._id);
@@ -104,9 +104,16 @@ async function recommendMovies(searchHistory) {
             }
             if (topMovies.length >= 10) break;
         }
+        let data=[]
+        for(const id of topMovies)
+        {
+            const movie=await Movie.findById(id);
+            data.push(movie);
+
+        }
     }
 
-    return topMovies;
+    return data;
 }
 
 
