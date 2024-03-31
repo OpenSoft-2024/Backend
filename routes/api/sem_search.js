@@ -3,6 +3,7 @@ const router = express.Router();
 const Movie = require('../../models/Movie');
 const axios = require('axios');
 const SearchHistory = require('../../models/Search_Hist');
+const auth = require("../../middleware/auth");
 
 const hf_token = process.env.HF_TOKEN;
 const embedding_url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2";
